@@ -16,13 +16,6 @@ var Soccer;
             this.X += _added.X;
             this.Y += _added.Y;
         }
-        draw(color = "red", radius = 1) {
-            Soccer.crc2.beginPath();
-            Soccer.crc2.arc(this.X, this.Y, radius, 0, 2 * Math.PI, false);
-            Soccer.crc2.lineWidth = 1;
-            Soccer.crc2.strokeStyle = color;
-            Soccer.crc2.stroke();
-        }
         // Keine Ahnung ob das so passt haha
         distance(v1, v2) {
             let d = Math.sqrt(Math.pow(v2.X - v1.X, 2) +
