@@ -1,0 +1,55 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blumenwiese</title>
+    
+    <!--Einbindung der externen Java Script - Dateien-->
+
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="background.js"></script>
+	<script type="text/javascript" src="player.js"></script>
+	<script type="text/javascript" src="moveable.js"></script>
+	<script type="text/javascript" src="vector.js"></script>
+
+    <!--Einbindung der externen CSS - Datei-->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <form>
+		<fieldset class="formular visible">
+			<legend> Welcome to the soccer simulation </legend> 
+
+			Choose the minimal precision of the ball
+			<input class="slider" type="range" name="Slider" min="0" max="15" step="5" value="5" /> <!-- wenn keine Eingabe stattfindet, wird der value genommen--> 
+			<hr />
+            Choose the maximal precision of the ball
+            <input class="slider" type="range" name="Slider" min="20" max="35" step="5" value="20" /> <!-- wenn keine Eingabe stattfindet, wird der value genommen--> 
+			<hr />
+			Choose the color of the arbitrator
+			<input class="backgroundColor" type="color" name="BGColor" placeholder="red" id="bGcolor" value="#ff0000">
+			<hr />
+			Choose the color of the first team
+			<input class="backsideColor" type="color" name="BSColor" placeholder="red" id="bScolor" value="#ff0000">
+			<hr />
+			Choose the color of the second team
+			<input class="fontColor" type="color" name="FColor" placeholder="red" id="font-color" value="#000000">
+			<hr />
+			Choose the minimal speed
+			<input class="slider" type="range" name="Slider" min="0" max="15" step="5" value="5" /> <!-- wenn keine Eingabe stattfindet, wird der value genommen--> 
+			<hr />
+            Choose the maximal speed
+            <input class="slider" type="range" name="Slider" min="20" max="35" step="5" value="20" /> <!-- wenn keine Eingabe stattfindet, wird der value genommen--> 
+			<hr />
+			<button type="button" class="start">Kick off</button>
+		</fieldset>
+		</form>
+
+    <canvas class="is-hidden" id="border" width = "800" height = "518" ></canvas>
+</body>
+</html>

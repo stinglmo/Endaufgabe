@@ -1,0 +1,26 @@
+#border {
+    border: solid 20px #060
+}
+
+/* Formular */
+input[type="radio"], input[type="checkbox"], label {
+	display: inline;
+}
+
+h1 {
+	grid-column: span 2;
+	text-align: center;
+}
+
+.formular {
+	width: 500px;
+	height: 300px;
+	text-align: center;
+	justify-content: center;
+	margin-top: 200px;
+	margin-left: 370px;
+}
+
+.is-hidden {
+	display: none;
+}
