@@ -24,7 +24,7 @@ namespace Soccer {
         }
 
         // Keine Ahnung ob das so passt haha
-        distance(v1: Vector, v2: Vector): number {
+        public distance(v1: Vector, v2: Vector): number {
             let d: number = Math.sqrt(Math.pow(v2.X - v1.X, 2) +
                 Math.pow(v2.Y - v1.Y, 2));
             return d;
