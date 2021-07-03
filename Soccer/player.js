@@ -20,50 +20,8 @@ var Soccer;
             // this.active = true;
             // this.tricotNumber = trikotNumer;
             this.radius = 2;
-            this.setName(name);
+            // this.setName(name);
             this.origin = new Soccer.Vector(_position.X, _position.Y);
-        }
-        // public setActive(active: boolean): void {
-        //     this.active = active;
-        // }
-        getTeam() {
-            return this.team;
-        }
-        setTeam(team) {
-            this.team = team;
-        }
-        getColor() {
-            return this.color;
-        }
-        setColor(color) {
-            this.color = color;
-        }
-        setShotPower(power) {
-            this.shotPower = power;
-        }
-        setPrecision(prec) {
-            this.precision = prec;
-        }
-        getPrecision() {
-            return this.precision;
-        }
-        getShotPower() {
-            return this.shotPower;
-        }
-        getName() {
-            return this.name;
-        }
-        setName(name) {
-            this.name = name;
-        }
-        getActionRadius() {
-            return this.actionRadius * Soccer.scale;
-        }
-        getOrigin() {
-            return this.origin;
-        }
-        setOrigin(origin) {
-            this.origin = origin;
         }
         draw() {
             Soccer.crc2.save();
@@ -81,9 +39,6 @@ var Soccer;
             // crc2.fillStyle = "white"; 
             // crc2.fillText(this.getTricotNumber().toString(), this.position.X, this.position.Y);
             Soccer.crc2.restore();
-        }
-        getPosition() {
-            return this.position;
         }
     }
     Soccer.Player = Player;

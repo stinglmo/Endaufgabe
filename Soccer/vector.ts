@@ -1,7 +1,7 @@
 namespace Soccer {
     //Jirkas Code (Asteroids/vector.ts)
 
-    export let scale: number = 5; // Skale
+    export let scale: number = 5; // Skale (wird auch bei getRadius in Moveable gebraucht)
 
     export class Vector {
         public X: number;

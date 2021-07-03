@@ -23,9 +23,9 @@ namespace Soccer {
             this.color = color;
         }
 
-        // public getRadius(): number {
-        //     return this.radius * scale;
-        // }
+        public getRadius(): number {
+            return this.radius * scale;
+        }
 
         public setRadius(radius: number): void {
             this.radius = radius;
@@ -71,6 +71,7 @@ namespace Soccer {
             );
 
             // Die Länge vom Diff - Vektor kalkulieren und return bei 0 
+            // --> Quadratwurzel ist Math.sqrt und Math.pow gibt die Potenz der Basis mit dem Exponenten an
             const vectorLength: number = Math.sqrt(Math.pow(diffVectr.X, 2) + Math.pow(diffVectr.Y, 2));
             if (vectorLength === 0) { return; }
 

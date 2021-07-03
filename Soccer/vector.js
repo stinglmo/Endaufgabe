@@ -2,7 +2,7 @@
 var Soccer;
 (function (Soccer) {
     //Jirkas Code (Asteroids/vector.ts)
-    Soccer.scale = 5; // Skale
+    Soccer.scale = 5; // Skale (wird auch bei getRadius in Moveable gebraucht)
     class Vector {
         constructor(_X, _Y) {
             this.X = _X;

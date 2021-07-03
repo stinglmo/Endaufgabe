@@ -1,32 +1,45 @@
 
 namespace Soccer {
 
-    export class Background {
+    export class Playingfield {
 
         constructor() {
-
-            this.drawSoccerfield(0, 0);
+            console.log("Playingfield wurde erstellt");
             
         }
 
         // Methode
-        drawSoccerfield(_x: number, _y: number): void {
+        draw(): void {
+            console.log("Playingfield wurde gemalt");
 
-            // Außenlinien
-            crc2.beginPath();
-            crc2.rect(0, 0, 800, 518);
-            crc2.fillStyle = "#060";
+
+            crc2.fillStyle = "green";
+            crc2.fillRect(0, 0, crc2.canvas.width, crc2.canvas.height);
             crc2.fill();
-            crc2.lineWidth = 1;
+
+            //leave a border around the field
+            crc2.save();
+            crc2.translate(10, 10);
+
+            //green stripes
+            crc2.fillStyle = "darkgreen";
+            crc2.fillRect(0, 0, 100, crc2.canvas.height - 20);
+            crc2.fill();
+            crc2.fillRect(200, 0, 100, crc2.canvas.height - 20);
+            crc2.fill();
+            crc2.fillRect(400, 0, 100, crc2.canvas.height - 20);
+            crc2.fill();
+            crc2.fillRect(600, 0, 100, crc2.canvas.height - 20);
+            crc2.fill();
+
+            //Außenlinie
+            crc2.lineWidth = 2;
             crc2.strokeStyle = "#FFF";
+            crc2.rect(0, 0, crc2.canvas.width - 20, crc2.canvas.height - 20);
             crc2.stroke();
             crc2.closePath();
 
-            crc2.fillStyle = "#FFF";
-
-            
-        
-            // Mittellinie
+            //Mittellinie
             crc2.beginPath();
             crc2.fillStyle = "060";
             crc2.moveTo(800 / 2, 0);
@@ -41,8 +54,9 @@ namespace Soccer {
             crc2.closePath();
 
             //Mittelpunkt
+            crc2.fillStyle = "#FFF";
             crc2.beginPath();
-            crc2.arc(800 / 2, 518 / 2, 2, 0, 2 * Math.PI, false);
+            crc2.arc(800 / 2, 518 / 2, 4, 0, 2 * Math.PI, false);
             crc2.fill();
             crc2.closePath();
             
@@ -65,11 +79,11 @@ namespace Soccer {
             crc2.lineWidth = 9;
             crc2.stroke();
             crc2.closePath();
-            crc2.lineWidth = 1;
+            crc2.lineWidth = 2;
     
             //Strafraumpunkt links
             crc2.beginPath();
-            crc2.arc(88, 518 / 2, 1, 0, 2 * Math.PI, true);
+            crc2.arc(88, 518 / 2, 2, 0, 2 * Math.PI, true);
             crc2.fill();
             crc2.closePath();
 
@@ -98,11 +112,11 @@ namespace Soccer {
             crc2.lineWidth = 9;
             crc2.stroke();
             crc2.closePath();
-            crc2.lineWidth = 1;
+            crc2.lineWidth = 2;
 
             //Strafraumpunkt rechts
             crc2.beginPath();
-            crc2.arc(800 - 88, 518 / 2, 1, 0, 2 * Math.PI, true);
+            crc2.arc(800 - 88, 518 / 2, 2, 0, 2 * Math.PI, true);
             crc2.fill();
             crc2.closePath();
 
@@ -112,29 +126,31 @@ namespace Soccer {
             crc2.stroke();
             crc2.closePath();
                 
-            //Oben links Ecke
+            //Ecke oben links
             crc2.beginPath();
             crc2.arc(0, 0, 8, 0, 0.5 * Math.PI, false);
             crc2.stroke();
             crc2.closePath();
 
-            //Unten links Ecke
+            //Ecke unten links
             crc2.beginPath();
-            crc2.arc(0, 518, 8, 0, 2 * Math.PI, true);
+            crc2.arc(0, 518, 8, 1.5 * Math.PI, 0, false);
             crc2.stroke();
             crc2.closePath();
 
-            //Oben rechts Ecke
+            //Ecke oben rechts
             crc2.beginPath();
             crc2.arc(800, 0, 8, 0.5 * Math.PI, 1 * Math.PI, false);
             crc2.stroke();
             crc2.closePath();
 
-            //Unten rechts Ecke
+            //Ecke unten rechts
             crc2.beginPath();
             crc2.arc(800, 518, 8, 1 * Math.PI, 1.5 * Math.PI, false);
             crc2.stroke();
             crc2.closePath();
+
+            crc2.restore();
         }
         
 

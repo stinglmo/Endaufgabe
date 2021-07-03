@@ -6,13 +6,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blumenwiese</title>
+    <title>Soccer Simulation</title>
     
     <!--Einbindung der externen Java Script - Dateien-->
 
     <script type="text/javascript" src="main.js"></script>
-    <script type="text/javascript" src="background.js"></script>
+    <script type="text/javascript" src="playingfield.ts"></script>
 	<script type="text/javascript" src="player.js"></script>
+	<script type="text/javascript" src="referee.js"></script>
+	<script type="text/javascript" src="linesman.js"></script>
 	<script type="text/javascript" src="moveable.js"></script>
 	<script type="text/javascript" src="vector.js"></script>
 
@@ -21,35 +23,64 @@
 </head>
 <body>
 
-    <form>
-		<fieldset class="formular visible">
-			<legend> Welcome to the soccer simulation </legend> 
+    <div id="simulationContainer">
+        <div id="score"><b>Score</b> <span id="scoreTeamA">0</span> : <span id="scoreTeamB">0</span> | <b>In possesion of the ball:</b> Player No <span id="ballPossesion">?</span></div>
+        <canvas width="820" height="538"></canvas>
+        <div id="playerInformation">Number: <span id="playerNumber"></span> | Speed: <span id="playerSpeed"></span> | Precision: <span id="playerPrecision"></span> | Remove </div>
+    </div>
 
-			Choose the minimal precision of the ball
-			<input class="slider" type="range" name="Slider" min="0" max="15" step="5" value="5" /> <!-- wenn keine Eingabe stattfindet, wird der value genommen--> 
-			<hr />
-            Choose the maximal precision of the ball
-            <input class="slider" type="range" name="Slider" min="20" max="35" step="5" value="20" /> <!-- wenn keine Eingabe stattfindet, wird der value genommen--> 
-			<hr />
-			Choose the color of the arbitrator
-			<input class="backgroundColor" type="color" name="BGColor" placeholder="red" id="bGcolor" value="#ff0000">
-			<hr />
-			Choose the color of the first team
-			<input class="backsideColor" type="color" name="BSColor" placeholder="red" id="bScolor" value="#ff0000">
-			<hr />
-			Choose the color of the second team
-			<input class="fontColor" type="color" name="FColor" placeholder="red" id="font-color" value="#000000">
-			<hr />
-			Choose the minimal speed
-			<input class="slider" type="range" name="Slider" min="0" max="15" step="5" value="5" /> <!-- wenn keine Eingabe stattfindet, wird der value genommen--> 
-			<hr />
-            Choose the maximal speed
-            <input class="slider" type="range" name="Slider" min="20" max="35" step="5" value="20" /> <!-- wenn keine Eingabe stattfindet, wird der value genommen--> 
-			<hr />
-			<button type="button" class="start">Kick off</button>
-		</fieldset>
-		</form>
+    <span id="restart"><b>↺</b></span>
 
-    <canvas class="is-hidden" id="border" width = "800" height = "518" ></canvas>
+
+    <div id="container">
+    <div id="settings">
+        <h2>Welcome!<br>Here you can set the preferences for your soccer simulation.</h2>
+        <form>
+            <fieldset>
+                    <legend> <b>Players speed</b> </legend>
+                    <label for="minimumspeed"><b>Minimum speed</b></label><br>
+                    slow 
+                    <input type="range" id="minimumspeed" name="Speed" value="2" min="1" max="3">
+                    fast
+                    <br>
+                    <br>
+                    <label for="maximumspeed"><b>Maximum speed</b></label><br>
+                    slow 
+                    <input type="range" id="maximumspeed" name="Speed" value="2" min="1" max="3">
+                    fast
+                    <br>
+            </fieldset>
+
+            <fieldset>
+                    <legend> <b>Players precision</b> </legend>
+                    <label for="minimumprecision"><b>Minimum precision</b></label><br>
+                    amateur
+                    <input type="range" id="minimumprecision" name="Precision" value="2" min="1" max="3">
+                    pro
+                    <br>
+                    <br>
+                    <label for="maximumprecision"><b>Maximum precision</b></label><br>
+                    amateur
+                    <input type="range" id="maximumprecision" name="Precision" value="2" min="1" max="3">
+                    pro
+                    <br>
+            </fieldset>
+        
+            <fieldset>
+                    <legend> <b>Team colours</b> </legend>
+        
+                        <label for="teamAcolour">Team A</label>
+                        <input type="color" id="teamAcolour" name="TeamColour"  value="#66b2ff">
+                        <br>
+                        <label for="teamBcolour">Team B </label>
+                        <input type="color" id="teamBcolour" name="TeamColour"  value="#ff3333">
+                        <br>
+            </fieldset>
+        </form>
+        
+        <div id="startbutton">Anpfiff</div> 
+
+    </div>
+    </div>
 </body>
 </html>

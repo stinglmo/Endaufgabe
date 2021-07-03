@@ -1,23 +1,36 @@
 "use strict";
 var Soccer;
 (function (Soccer) {
-    class Background {
+    class Playingfield {
         constructor() {
-            this.drawSoccerfield(0, 0);
+            console.log("Playingfield wurde erstellt");
         }
         // Methode
-        drawSoccerfield(_x, _y) {
-            // Außenlinien
-            Soccer.crc2.beginPath();
-            Soccer.crc2.rect(0, 0, 800, 518);
-            Soccer.crc2.fillStyle = "#060";
+        draw() {
+            console.log("Playingfield wurde gemalt");
+            Soccer.crc2.fillStyle = "green";
+            Soccer.crc2.fillRect(0, 0, Soccer.crc2.canvas.width, Soccer.crc2.canvas.height);
             Soccer.crc2.fill();
-            Soccer.crc2.lineWidth = 1;
+            //leave a border around the field
+            Soccer.crc2.save();
+            Soccer.crc2.translate(10, 10);
+            //green stripes
+            Soccer.crc2.fillStyle = "darkgreen";
+            Soccer.crc2.fillRect(0, 0, 100, Soccer.crc2.canvas.height - 20);
+            Soccer.crc2.fill();
+            Soccer.crc2.fillRect(200, 0, 100, Soccer.crc2.canvas.height - 20);
+            Soccer.crc2.fill();
+            Soccer.crc2.fillRect(400, 0, 100, Soccer.crc2.canvas.height - 20);
+            Soccer.crc2.fill();
+            Soccer.crc2.fillRect(600, 0, 100, Soccer.crc2.canvas.height - 20);
+            Soccer.crc2.fill();
+            //Außenlinie
+            Soccer.crc2.lineWidth = 2;
             Soccer.crc2.strokeStyle = "#FFF";
+            Soccer.crc2.rect(0, 0, Soccer.crc2.canvas.width - 20, Soccer.crc2.canvas.height - 20);
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
-            Soccer.crc2.fillStyle = "#FFF";
-            // Mittellinie
+            //Mittellinie
             Soccer.crc2.beginPath();
             Soccer.crc2.fillStyle = "060";
             Soccer.crc2.moveTo(800 / 2, 0);
@@ -30,8 +43,9 @@ var Soccer;
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
             //Mittelpunkt
+            Soccer.crc2.fillStyle = "#FFF";
             Soccer.crc2.beginPath();
-            Soccer.crc2.arc(800 / 2, 518 / 2, 2, 0, 2 * Math.PI, false);
+            Soccer.crc2.arc(800 / 2, 518 / 2, 4, 0, 2 * Math.PI, false);
             Soccer.crc2.fill();
             Soccer.crc2.closePath();
             //Strafraum links
@@ -51,10 +65,10 @@ var Soccer;
             Soccer.crc2.lineWidth = 9;
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
-            Soccer.crc2.lineWidth = 1;
+            Soccer.crc2.lineWidth = 2;
             //Strafraumpunkt links
             Soccer.crc2.beginPath();
-            Soccer.crc2.arc(88, 518 / 2, 1, 0, 2 * Math.PI, true);
+            Soccer.crc2.arc(88, 518 / 2, 2, 0, 2 * Math.PI, true);
             Soccer.crc2.fill();
             Soccer.crc2.closePath();
             //Halbkreis links
@@ -79,10 +93,10 @@ var Soccer;
             Soccer.crc2.lineWidth = 9;
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
-            Soccer.crc2.lineWidth = 1;
+            Soccer.crc2.lineWidth = 2;
             //Strafraumpunkt rechts
             Soccer.crc2.beginPath();
-            Soccer.crc2.arc(800 - 88, 518 / 2, 1, 0, 2 * Math.PI, true);
+            Soccer.crc2.arc(800 - 88, 518 / 2, 2, 0, 2 * Math.PI, true);
             Soccer.crc2.fill();
             Soccer.crc2.closePath();
             //Halbkreis rechts
@@ -90,28 +104,29 @@ var Soccer;
             Soccer.crc2.arc(800 - 88, 518 / 2, 73, 0.71 * Math.PI, 1.29 * Math.PI, false);
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
-            //Oben links Ecke
+            //Ecke oben links
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(0, 0, 8, 0, 0.5 * Math.PI, false);
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
-            //Unten links Ecke
+            //Ecke unten links
             Soccer.crc2.beginPath();
-            Soccer.crc2.arc(0, 518, 8, 0, 2 * Math.PI, true);
+            Soccer.crc2.arc(0, 518, 8, 1.5 * Math.PI, 0, false);
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
-            //Oben rechts Ecke
+            //Ecke oben rechts
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(800, 0, 8, 0.5 * Math.PI, 1 * Math.PI, false);
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
-            //Unten rechts Ecke
+            //Ecke unten rechts
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(800, 518, 8, 1 * Math.PI, 1.5 * Math.PI, false);
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
+            Soccer.crc2.restore();
         }
     } // close class
-    Soccer.Background = Background;
+    Soccer.Playingfield = Playingfield;
 })(Soccer || (Soccer = {})); // close namespace
-//# sourceMappingURL=background.js.map
+//# sourceMappingURL=playingfield.js.map

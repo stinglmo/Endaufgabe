@@ -28,67 +28,10 @@ namespace Soccer {
             this.radius = 2;
 
 
-            this.setName(name);
+            // this.setName(name);
             this.origin = new Vector(_position.X, _position.Y);
         }
-
-        // public setActive(active: boolean): void {
-        //     this.active = active;
-        // }
-
-        public getTeam(): number {
-            return this.team;
-        }
-
-        public setTeam(team: number): void {
-            this.team = team;
-        }
-
-        public getColor(): string {
-            return this.color;
-        }
-
-        public setColor(color: string): void {
-            this.color = color;
-        }
-
-        public setShotPower(power: number): void {
-            this.shotPower = power;
-        }
-
-        public setPrecision(prec: number): void {
-            this.precision = prec;
-        }
-
-        public getPrecision(): number {
-            return this.precision;
-        }
-
-        public getShotPower(): number {
-            return this.shotPower;
-        }
-
-        public getName(): string {
-            return this.name;
-        }
-
-        public setName(name: string): void {
-            this.name = name;
-        }
-
-        public getActionRadius(): number {
-            return this.actionRadius * scale;
-        }
-
-        public getOrigin(): Vector {
-            return this.origin;
-        }
-
-        public setOrigin(origin: Vector): void {
-            this.origin = origin;
-        }
-
-        
+  
         public draw(): void {
             crc2.save();
 
@@ -110,8 +53,5 @@ namespace Soccer {
             crc2.restore();
         }
 
-        getPosition(): Vector {
-            return this.position;
-        }
     }
 }
