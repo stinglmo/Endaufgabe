@@ -5,10 +5,10 @@ var Soccer;
     let landingPage;
     let startbutton;
     let restartbutton;
-    let minimumSpeed = ;
-    let maximumSpeed = ;
-    let minimumPrecision = ;
-    let maximumPrecision = ;
+    let minimumSpeed = 3; // Folgenden 4 bekommen Formularwerte
+    let maximumSpeed = 3;
+    let minimumPrecision = 6;
+    let maximumPrecision = 7;
     let teamAColor = "66b2ff";
     let teamBColor = "ff3333";
     let goalsA;
@@ -16,6 +16,7 @@ var Soccer;
     let field;
     let animation = true;
     let playerInformation = [
+        // Team A
         { x: 125, y: 275, team: "A" },
         { x: 200, y: 150, team: "A" },
         { x: 200, y: 400, team: "A" },
@@ -27,6 +28,7 @@ var Soccer;
         { x: 400, y: 400, team: "A" },
         { x: 450, y: 275, team: "A" },
         { x: 500, y: 75, team: "A" },
+        // Team B
         { x: 500, y: 475, team: "B" },
         { x: 550, y: 275, team: "B" },
         { x: 600, y: 150, team: "B" },
@@ -38,11 +40,13 @@ var Soccer;
         { x: 800, y: 150, team: "B" },
         { x: 800, y: 400, team: "B" },
         { x: 875, y: 275, team: "B" },
+        // Auswechselspieler Team A
         { x: 25, y: 125, team: "A" },
         { x: 25, y: 200, team: "A" },
         { x: 25, y: 275, team: "A" },
         { x: 25, y: 350, team: "A" },
         { x: 25, y: 425, team: "A" },
+        // Auswechselspieler Team B
         { x: 975, y: 125, team: "B" },
         { x: 975, y: 200, team: "B" },
         { x: 975, y: 275, team: "B" },

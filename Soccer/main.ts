@@ -7,10 +7,10 @@ namespace Soccer {
     let startbutton: HTMLDivElement;
     let restartbutton: HTMLSpanElement;
 
-    let minimumSpeed: number = ;
-    let maximumSpeed: number = ;
-    let minimumPrecision: number = ;
-    let maximumPrecision: number = ;
+    let minimumSpeed: number = 3; // Folgenden 4 bekommen Formularwerte
+    let maximumSpeed: number = 3;
+    let minimumPrecision: number = 6;
+    let maximumPrecision: number = 7;
     let teamAColor: string = "66b2ff";
     let teamBColor: string = "ff3333";
     let goalsA: number;
@@ -18,8 +18,15 @@ namespace Soccer {
     let field: Playingfield;
     let animation: boolean = true;
 
+    interface PlayerInformation {
+        x: number;
+        y: number;
+        team: string;
+    }
+
     let playerInformation: PlayerInformation[] = [
 
+        // Team A
         {x: 125, y: 275, team: "A"},
         {x: 200, y: 150, team: "A"},
         {x: 200, y: 400, team: "A"},
@@ -32,6 +39,7 @@ namespace Soccer {
         {x: 450, y: 275, team: "A"},
         {x: 500, y: 75, team: "A"},
         
+        // Team B
         {x: 500, y: 475, team: "B"},
         {x: 550, y: 275, team: "B"},
         {x: 600, y: 150, team: "B"},
@@ -44,12 +52,14 @@ namespace Soccer {
         {x: 800, y: 400, team: "B"},
         {x: 875, y: 275, team: "B"},
         
+        // Auswechselspieler Team A
         {x: 25, y: 125, team: "A"},
         {x: 25, y: 200, team: "A"},
         {x: 25, y: 275, team: "A"},
         {x: 25, y: 350, team: "A"},
         {x: 25, y: 425, team: "A"},
         
+        // Auswechselspieler Team B
         {x: 975, y: 125, team: "B"},
         {x: 975, y: 200, team: "B"},
         {x: 975, y: 275, team: "B"},
