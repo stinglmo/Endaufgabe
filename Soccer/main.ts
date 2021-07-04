@@ -7,12 +7,16 @@ namespace Soccer {
     let startbutton: HTMLDivElement;
     let restartbutton: HTMLSpanElement;
 
-    let minimumSpeed: number = 3; // Folgenden 4 bekommen Formularwerte
-    let maximumSpeed: number = 3;
-    let minimumPrecision: number = 6;
-    let maximumPrecision: number = 7;
-    let teamAColor: string = "66b2ff";
-    let teamBColor: string = "ff3333";
+    // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
+    let formData: FormData;
+     // Folgenden 6 bekommen Formularwerte
+    let minimumSpeed: number;
+    let maximumSpeed: number;
+    let minimumPrecision: number;
+    let maximumPrecision: number;
+    let teamAColor: FormDataEntryValue | null;
+    let teamBColor: FormDataEntryValue | null;
+
     let goalsA: number;
     let goalsB: number;
     let field: Playingfield;
@@ -81,23 +85,45 @@ namespace Soccer {
         startbutton = <HTMLDivElement>document.querySelector("div#startbutton");
         restartbutton = <HTMLSpanElement>document.querySelector("span#restart");
 
+        handleChange(); //
+
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
 
+        
+
+    }
+
+    function handleChange(): void {
+        let formData: FormData = new FormData(document.forms[0]);  // weist der Variablen formData alle fieldsets zu
+        console.log(formData);
+        
+        minimumSpeed = Number(formData.get("MinimumSpeedSlider")); // Ich hole mir mit dem Namen "MinimumSpeedSlider" den value, in Form einer Nummer
+        maximumSpeed = Number(formData.get("MaximumSpeedSlider"));
+        minimumPrecision = Number(formData.get("MinimumPrecisionSlider"));
+        maximumPrecision = Number(formData.get("MaximumPrecisionSlider"));
+
+        teamAColor = <string>formData.get("TeamAColorPicker"); // warum  string? Ich habs ohne
+        teamBColor = <string>formData.get("TeamBColorPicker");
     }
 
     function startSimulation(): void {
-        landingPage.style.display = "none";
+
+        landingPage.style.display = "none"; // Damit das Formular verschwindet
         let field: Playingfield = new Playingfield();
         field.draw();
-        createPlayers();
 
-        let ball = new Ball(new Vector(20 + (800 / 2), 20 + (512 / 2)));
+        let ball: Ball = new Ball(new Vector(20 + (800 / 2), 20 + (512 / 2)));
+        moveables.push(ball);
+        
+        createPlayers();
+        
 
     }
 
     function restartSimulation(): void {
         landingPage.style.display = "";
+        // here reset speed, precision and color values to default 
     }
 
 

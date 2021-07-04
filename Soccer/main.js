@@ -5,12 +5,15 @@ var Soccer;
     let landingPage;
     let startbutton;
     let restartbutton;
-    let minimumSpeed = 3; // Folgenden 4 bekommen Formularwerte
-    let maximumSpeed = 3;
-    let minimumPrecision = 6;
-    let maximumPrecision = 7;
-    let teamAColor = "66b2ff";
-    let teamBColor = "ff3333";
+    // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
+    let formData;
+    // Folgenden 6 bekommen Formularwerte
+    let minimumSpeed;
+    let maximumSpeed;
+    let minimumPrecision;
+    let maximumPrecision;
+    let teamAColor;
+    let teamBColor;
     let goalsA;
     let goalsB;
     let field;
@@ -64,18 +67,31 @@ var Soccer;
         landingPage = document.querySelector("div#container");
         startbutton = document.querySelector("div#startbutton");
         restartbutton = document.querySelector("span#restart");
+        handleChange(); //
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
     }
+    function handleChange() {
+        let formData = new FormData(document.forms[0]); // weist der Variablen formData alle fieldsets zu
+        console.log(formData);
+        minimumSpeed = Number(formData.get("MinimumSpeedSlider")); // Ich hole mir mit dem Namen "MinimumSpeedSlider" den value, in Form einer Nummer
+        maximumSpeed = Number(formData.get("MaximumSpeedSlider"));
+        minimumPrecision = Number(formData.get("MinimumPrecisionSlider"));
+        maximumPrecision = Number(formData.get("MaximumPrecisionSlider"));
+        teamAColor = formData.get("TeamAColorPicker"); // warum  string? Ich habs ohne
+        teamBColor = formData.get("TeamBColorPicker");
+    }
     function startSimulation() {
-        landingPage.style.display = "none";
+        landingPage.style.display = "none"; // Damit das Formular verschwindet
         let field = new Soccer.Playingfield();
         field.draw();
-        createPlayers();
         let ball = new Soccer.Ball(new Soccer.Vector(20 + (800 / 2), 20 + (512 / 2)));
+        moveables.push(ball);
+        createPlayers();
     }
     function restartSimulation() {
         landingPage.style.display = "";
+        // here reset speed, precision and color values to default 
     }
     // AllPlayer
     function createPlayers() {
