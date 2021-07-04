@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Soccer Simulation</title>
     
     <!--Einbindung der externen Java Script - Dateien-->
@@ -13,6 +14,7 @@
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="playingfield.js"></script>
 	<script type="text/javascript" src="player.js"></script>
+    <script type="text/javascript" src="ball.js"></script>
 	<script type="text/javascript" src="referee.js"></script>
 	<script type="text/javascript" src="linesman.js"></script>
 	<script type="text/javascript" src="moveable.js"></script>
@@ -20,65 +22,69 @@
 
     <!--Einbindung der externen CSS - Datei-->
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com"> 
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div id="simulationContainer">
-        <div id="score"><b>Score</b> <span id="scoreTeamA">0</span> : <span id="scoreTeamB">0</span> | <b>In possesion of the ball:</b> Player No <span id="ballPossesion">?</span></div>
-        <canvas width="820" height="538"></canvas>
+        <div id="score"></div>
+        <canvas width="1000" height="550"></canvas>
         <div id="playerInformation">Number: <span id="playerNumber"></span> | Speed: <span id="playerSpeed"></span> | Precision: <span id="playerPrecision"></span> | Remove </div>
     </div>
 
+    <span id="pause"><b>ll</b></span>
     <span id="restart"><b>↺</b></span>
 
 
-    <div id="container">
+    <div id="settingsContainer">
     <div id="settings">
         <h2>Welcome!<br>Here you can set the preferences for your soccer simulation.</h2>
         <form>
             <fieldset>
-                    <legend> <b>Players speed</b> </legend>
-                    <label for="minimumspeed"><b>Minimum speed</b></label><br>
-                    slow 
-                    <input type="range" id="minimumspeed" name="Speed" value="2" min="1" max="3">
-                    fast
-                    <br>
-                    <br>
-                    <label for="maximumspeed"><b>Maximum speed</b></label><br>
-                    slow 
-                    <input type="range" id="maximumspeed" name="Speed" value="2" min="1" max="3">
-                    fast
-                    <br>
+                <legend> <b>Players minimum speed</b> </legend>
+                slow 
+                <input type="range" id="minimumspeed" name="MinimumSpeedSlider" value="1" min="1" max="3">
+                medium
             </fieldset>
 
             <fieldset>
-                    <legend> <b>Players precision</b> </legend>
-                    <label for="minimumprecision"><b>Minimum precision</b></label><br>
-                    amateur
-                    <input type="range" id="minimumprecision" name="Precision" value="2" min="1" max="3">
-                    pro
-                    <br>
-                    <br>
-                    <label for="maximumprecision"><b>Maximum precision</b></label><br>
-                    amateur
-                    <input type="range" id="maximumprecision" name="Precision" value="2" min="1" max="3">
-                    pro
-                    <br>
+                <legend> <b>Players maximum speed</b> </legend>
+                medium
+                <input type="range" id="maximumspeed" name="MaximumSpeedSlider" value="5" min="3" max="5">
+                fast
+                <br>
+            </fieldset>
+
+            <fieldset>
+                <legend> <b>Players minimum precision</b> </legend>
+                <label for="minimumprecision"><b>Minimum precision</b></label><br>
+                amateur
+                <input type="range" id="minimumprecision" name="MinimumPrecisionSlider" value="1" min="1" max="3">
+                advanced
+            </fieldset>
+
+            <fieldset>
+                <legend> <b>Players maximum precision</b> </legend>
+                <label for="minimumprecision"><b>Minimum precision</b></label><br>
+                advanced
+                <input type="range" id="minimumprecision" name="MaximumPrecisionSlider" value="5" min="3" max="5">
+                pro
             </fieldset>
         
             <fieldset>
                     <legend> <b>Team colours</b> </legend>
         
                         <label for="teamAcolour">Team A</label>
-                        <input type="color" id="teamAcolour" name="TeamColour"  value="#66b2ff">
+                        <input type="color" id="teamAcolor" name="TeamAColorPicker"  value="#66b2ff">
                         <br>
                         <label for="teamBcolour">Team B </label>
-                        <input type="color" id="teamBcolour" name="TeamColour"  value="#ff3333">
+                        <input type="color" id="teamBcolor" name="TeamBColorPicker"  value="#ff3333">
                         <br>
             </fieldset>
         </form>
         
-        <div id="startbutton">Anpfiff</div> 
+        <div id="startbutton">Kick off!</div> 
 
     </div>
     </div>

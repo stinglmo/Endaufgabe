@@ -2,32 +2,21 @@
 var Soccer;
 (function (Soccer) {
     /// Klasse für den Player
-    class Player extends Soccer.Movable {
-        constructor(name, _position, shotPower = 70, precision = 70, speed = 80, color = "red", team = 0 /* trikotNumer: number = 0 */) {
-            super(new Soccer.Vector(_position.X, _position.Y));
-            this.speedLevel = 2; // Standartgeschwindigkeit welche mit Geschwindigkeit gescalet werden könnte 
-            this.speed = 80; // Geschwindigkeit 1 - 99
-            this.precision = 20; // Präzision 1 to 99
-            this.origin = new Soccer.Vector(0, 0); // Ursprung vom Spieler
-            this.actionRadius = 30; // Aktion Radius
-            // private active: boolean; // Schauen ob der Spieler auf dem Feld ist oder ein Auswechselspieler ist 
-            this.shotPower = 100; // Schießkraft
-            this.shotPower = shotPower;
-            this.precision = precision;
-            this.speed = speed;
-            this.color = color;
-            this.team = team;
-            // this.active = true;
-            // this.tricotNumber = trikotNumer;
-            this.radius = 2;
-            // this.setName(name);
-            this.origin = new Soccer.Vector(_position.X, _position.Y);
+    class Player extends Soccer.Moveable {
+        constructor(_position, _team, _color, _speed, _precision, _jerseyNumber) {
+            super(_position);
+            this.radius = 15;
+            this.team = _team;
+            this.color = _color;
+            this.speed = _speed;
+            this.precision = _precision;
+            this.jerseyNumber = _jerseyNumber;
         }
         draw() {
             Soccer.crc2.save();
             // draw player center
             Soccer.crc2.beginPath();
-            Soccer.crc2.arc(this.position.X, this.position.Y, 2 * 1.5, 0, 2 * Math.PI, false);
+            Soccer.crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
             Soccer.crc2.fillStyle = this.color;
             Soccer.crc2.fill();
             Soccer.crc2.lineWidth = 2;

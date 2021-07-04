@@ -1,23 +1,20 @@
 namespace Soccer {
     
-    export class Ball extends Movable {
+    export class Ball extends Moveable {
         
-        protected speed: number = 0;
-        protected speedLevel: number = 10;
+        public radius: number = 10;
+        destination: Vector; //position of the click where the ball will roll to
 
-        constructor(_origin: Vector) {
-            super(_origin);
-            this.slowDown = true;
-            this.radius = 1.5;
+        constructor(_position: Vector) {
+            super(_position);
         }
-
 
         public draw(): void {
             crc2.save();
 
             // draw player center
             crc2.beginPath();
-            crc2.arc(this.position.X, this.position.Y, this.getRadius(), 0, 2 * Math.PI, false);
+            crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
             crc2.fillStyle = "white";
             crc2.fill();
             crc2.lineWidth = 1;
@@ -26,6 +23,22 @@ namespace Soccer {
 
 
             crc2.restore();
+        }
+
+        // erstmal so
+        move(): void {
+            //move
+            this.position.x += 4;
+            this.position.y += 2;
+
+            if (this.position.x < 0)
+                this.position.x += crc2.canvas.width;
+            if (this.position.y < 0)
+                this.position.y += crc2.canvas.height;
+            if (this.position.x > crc2.canvas.width)
+                this.position.x -= crc2.canvas.width;
+            if (this.position.y > crc2.canvas.height)
+                this.position.y -= crc2.canvas.height;
         }
     }
 }

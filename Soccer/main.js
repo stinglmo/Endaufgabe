@@ -1,23 +1,22 @@
 "use strict";
 var Soccer;
 (function (Soccer) {
-    let settings;
     let landingPage;
     let startbutton;
     let restartbutton;
-    // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
-    let formData;
+    let pausebutton;
     // Folgenden 6 bekommen Formularwerte
-    let minimumSpeed;
-    let maximumSpeed;
-    let minimumPrecision;
-    let maximumPrecision;
-    let teamAColor;
-    let teamBColor;
-    let goalsA;
-    let goalsB;
+    let minimumSpeed = 1;
+    let maximumSpeed = 5;
+    let minimumPrecision = 1;
+    let maximumPrecision = 5;
+    let teamAColor = "66b2ff";
+    let teamBColor = "ff3333";
+    let goalsA = 0;
+    let goalsB = 0;
     let field;
-    let animation = true;
+    let animation = false;
+    let animationInterval;
     let playerInformation = [
         // Team A
         { x: 125, y: 275, team: "A" },
@@ -58,22 +57,66 @@ var Soccer;
     ];
     let allPlayers = [];
     let moveables = [];
+    let sparePlayers = [];
     window.addEventListener("load", handleLoad);
     function handleLoad() {
+        // Canvas und rendering context
         let canvas = document.querySelector("canvas");
         if (!canvas)
             return;
         Soccer.crc2 = canvas.getContext("2d");
-        landingPage = document.querySelector("div#container");
+        //HTML-Elemente werden herangeholt 
+        landingPage = document.querySelector("div#settingsContainer");
         startbutton = document.querySelector("div#startbutton");
         restartbutton = document.querySelector("span#restart");
-        handleChange(); //
+        pausebutton = document.querySelector("span#pause"); // zum ausprobieren
+        // EventListener werden auf die Button installiert umd von dem Formular zum Spielfeld zu toggeln 
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
+        pausebutton.addEventListener("click", pauseSimulation);
+        canvas.addEventListener("click", shootBall);
+        //Der ChangeListener wird für alle Fieldset-Elemente installiert um das Formular auszuwerten.
+        let fieldsets = document.querySelectorAll("fieldset");
+        for (let i = 0; i < fieldsets.length; i++) {
+            let fieldset = fieldsets[i];
+            fieldset.addEventListener("change", handleChange);
+        }
+    }
+    function randomBetween(_min, _max) {
+        return _min + Math.random() * (_max - _min);
+    }
+    Soccer.randomBetween = randomBetween;
+    function startSimulation() {
+        landingPage.style.display = "none"; // Damit das Formular verschwindet
+        // Background und Ball werden erstellt:
+        field = new Soccer.Playingfield(); // Background
+        Soccer.ball = new Soccer.Ball(new Soccer.Vector(500, 275));
+        moveables.push(Soccer.ball);
+        // Alle Menschen:
+        createPeopleonField();
+        //start animation
+        animation = true;
+        animationInterval = window.setInterval(function () {
+            if (animation == true)
+                update();
+        }, 20);
+    }
+    function restartSimulation() {
+        //extra function in case we need the initialisation somewhere else
+        initialisation();
+    }
+    function pauseSimulation() {
+        if (animation == true) {
+            animation = false;
+        }
+        else {
+            animation = true;
+        }
     }
     function handleChange() {
+        // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
         let formData = new FormData(document.forms[0]); // weist der Variablen formData alle fieldsets zu
-        console.log(formData);
+        // console.log(formData);
         minimumSpeed = Number(formData.get("MinimumSpeedSlider")); // Ich hole mir mit dem Namen "MinimumSpeedSlider" den value, in Form einer Nummer
         maximumSpeed = Number(formData.get("MaximumSpeedSlider"));
         minimumPrecision = Number(formData.get("MinimumPrecisionSlider"));
@@ -81,40 +124,76 @@ var Soccer;
         teamAColor = formData.get("TeamAColorPicker"); // warum  string? Ich habs ohne
         teamBColor = formData.get("TeamBColorPicker");
     }
-    function startSimulation() {
-        landingPage.style.display = "none"; // Damit das Formular verschwindet
-        let field = new Soccer.Playingfield();
-        field.draw();
-        let ball = new Soccer.Ball(new Soccer.Vector(20 + (800 / 2), 20 + (512 / 2)));
-        moveables.push(ball);
-        createPlayers();
-    }
-    function restartSimulation() {
-        landingPage.style.display = "";
-        // here reset speed, precision and color values to default 
-    }
     // AllPlayer
-    function createPlayers() {
+    function createPeopleonField() {
         // Spieler:
         for (let i = 0; i < 32; i++) {
-            let position = new Soccer.Vector( /*position from playerInformation array*/);
-            let team = "A"; // from array;
-            let speed = 5; // randomBetween(minimumSpeed, maximumSpeed);
-            let precision = 2; // randomBetween(minimumPrecision, maximumPrecision);
+            let position = new Soccer.Vector(playerInformation[i].x, playerInformation[i].y); // Position vom playerInformation Array 
+            let team = playerInformation[i].team; // from array;
+            let speed = randomBetween(minimumSpeed, maximumSpeed);
+            let precision = randomBetween(minimumPrecision, maximumPrecision);
             let jerseyNumber = i + 1;
-            const player = new Soccer.Player("Player", new Soccer.Vector(5, 5 + (512 / 2))); // keine Ahnung wie man sie verteilt
+            let color = "000000"; //default value just in case
+            if (team == "A") {
+                color = teamAColor;
+            }
+            else if (team == "B") {
+                color = teamBColor;
+            }
+            const player = new Soccer.Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
             // bekommen noch Geschwindigkeit und Präzision
+            //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
             allPlayers.push(player);
             if (jerseyNumber <= 22) {
                 moveables.push(player);
             }
+            else if (jerseyNumber > 22) {
+                sparePlayers.push(player);
+            }
         }
         // Schiedsrichter und zwei Linienmänner werden kreiert:
-        const arbit = new Soccer.Referee(new Soccer.Vector(20, 20 + 800));
-        const linesmanTop = new Soccer.Linesman(new Soccer.Vector(20, 20 + 800 / 2));
-        const linesmanBottom = new Soccer.Linesman(new Soccer.Vector(20 + 800 / 2, 20 + 800));
-        // alle in Moveable pushen
-        moveables.push(arbit, linesmanTop, linesmanBottom);
+        const referee = new Soccer.Referee(new Soccer.Vector(20, 20 + 800));
+        const linesmanTop = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, 15));
+        const linesmanBottom = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, Soccer.crc2.canvas.height - 15));
+        // alle in moveables pushen
+        moveables.push(referee, linesmanTop, linesmanBottom);
+    }
+    function shootBall(_event) {
+        //get the position of the click and move the ball to this position
+        //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
+    }
+    function update() {
+        //draw the background
+        field.draw();
+        //update animation
+        for (let moveable of moveables) {
+            moveable.move();
+            moveable.draw();
+        }
+        for (let sparePlayer of sparePlayers) {
+            sparePlayer.draw();
+        }
+        // Score:
+        let scoreDisplay = document.querySelector("div#score");
+        scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b>Player No ?"; //add jerseyNumber of player in possesion of the ball 
+    }
+    function initialisation() {
+        //show setings container again
+        landingPage.style.display = "";
+        //stop animation and reset values to default
+        animation = false;
+        minimumSpeed = 1;
+        maximumSpeed = 5;
+        minimumPrecision = 1;
+        maximumPrecision = 5;
+        teamAColor = "66b2ff";
+        teamBColor = "ff3333";
+        //empty arrays of current objects in the simulation
+        moveables = [];
+        allPlayers = [];
+        sparePlayers = [];
+        //animationsintervall beenden
+        window.clearInterval(animationInterval);
     }
 })(Soccer || (Soccer = {})); // close namespace
 //# sourceMappingURL=main.js.map

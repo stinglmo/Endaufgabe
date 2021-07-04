@@ -1,43 +1,32 @@
 namespace Soccer {
 
     /// Klasse für den Player
-    export class Player extends Movable {
+    export class Player extends Moveable {
 
-        protected speedLevel: number = 2; // Standartgeschwindigkeit welche mit Geschwindigkeit gescalet werden könnte 
-        protected color: string; // Farbe
-        protected speed: number = 80; // Geschwindigkeit 1 - 99
-        protected precision: number = 20; // Präzision 1 to 99
-        private origin: Vector = new Vector(0, 0); // Ursprung vom Spieler
-        private actionRadius: number = 30; // Aktion Radius
-        // private tricotNumber: number; // Trikotnummer -> noch schauen wie darstellbar
-        private team: number; // Teamnummer
-        private name: string; // Name vom Spieler
-        // private active: boolean; // Schauen ob der Spieler auf dem Feld ist oder ein Auswechselspieler ist 
-        private shotPower: number = 100; // Schießkraft
-
-        constructor(name: string, _position: Vector, shotPower: number = 70, precision: number = 70, speed: number = 80, color: string = "red", team: number = 0 /* trikotNumer: number = 0 */) {
-            super(new Vector(_position.X, _position.Y));
-
-            this.shotPower = shotPower;
-            this.precision = precision;
-            this.speed = speed;
-            this.color = color;
-            this.team = team;
-            // this.active = true;
-            // this.tricotNumber = trikotNumer;
-            this.radius = 2;
+        public radius: number = 15;
+        team: string;
+        color: string;
+        speed: number;
+        precision: number;
+        jerseyNumber: number;
 
 
-            // this.setName(name);
-            this.origin = new Vector(_position.X, _position.Y);
+        constructor(_position: Vector, _team: string, _color: string, _speed: number, _precision: number, _jerseyNumber: number) {
+            super(_position);
+            this.team = _team;
+            this.color = _color;
+            this.speed = _speed;
+            this.precision = _precision;
+            this.jerseyNumber = _jerseyNumber;
         }
+
   
         public draw(): void {
             crc2.save();
 
             // draw player center
             crc2.beginPath();
-            crc2.arc(this.position.X, this.position.Y, 2 * 1.5, 0, 2 * Math.PI, false);
+            crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
             crc2.fillStyle = this.color;
             crc2.fill();
             crc2.lineWidth = 2;

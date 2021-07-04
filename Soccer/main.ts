@@ -2,25 +2,25 @@
 namespace Soccer {
 
     export let crc2: CanvasRenderingContext2D;
-    let settings: HTMLElement;
     let landingPage: HTMLDivElement;
     let startbutton: HTMLDivElement;
     let restartbutton: HTMLSpanElement;
+    let pausebutton: HTMLSpanElement;
 
-    // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
-    let formData: FormData;
      // Folgenden 6 bekommen Formularwerte
-    let minimumSpeed: number;
-    let maximumSpeed: number;
-    let minimumPrecision: number;
-    let maximumPrecision: number;
-    let teamAColor: FormDataEntryValue | null;
-    let teamBColor: FormDataEntryValue | null;
+    let minimumSpeed: number = 1;
+    let maximumSpeed: number = 5;
+    let minimumPrecision: number = 1;
+    let maximumPrecision: number = 5;
+    let teamAColor: string = "66b2ff";
+    let teamBColor: string = "ff3333";
 
-    let goalsA: number;
-    let goalsB: number;
+    let goalsA: number = 0;
+    let goalsB: number = 0;
     let field: Playingfield;
-    let animation: boolean = true;
+    let animation: boolean = false;
+    let animationInterval: number;
+    export let ball: Ball;
 
     interface PlayerInformation {
         x: number;
@@ -72,31 +72,85 @@ namespace Soccer {
         ];
 
     let allPlayers: Player[] = [];
-    let moveables: Movable[] = [];
+    let moveables: Moveable[] = [];
+    let sparePlayers: Player[] = [];
 
     window.addEventListener("load", handleLoad);
 
     function handleLoad(): void {
+        // Canvas und rendering context
         let canvas: HTMLCanvasElement | null = document.querySelector("canvas");
         if (!canvas)
             return;
         crc2 = <CanvasRenderingContext2D>canvas.getContext("2d");
-        landingPage = <HTMLDivElement>document.querySelector("div#container");
+
+        //HTML-Elemente werden herangeholt 
+        landingPage = <HTMLDivElement>document.querySelector("div#settingsContainer");
         startbutton = <HTMLDivElement>document.querySelector("div#startbutton");
         restartbutton = <HTMLSpanElement>document.querySelector("span#restart");
+        pausebutton = <HTMLSpanElement>document.querySelector("span#pause"); // zum ausprobieren
 
-        handleChange(); //
-
+        // EventListener werden auf die Button installiert umd von dem Formular zum Spielfeld zu toggeln 
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
+        pausebutton.addEventListener("click", pauseSimulation);
+        canvas.addEventListener("click", shootBall);
 
+        //Der ChangeListener wird für alle Fieldset-Elemente installiert um das Formular auszuwerten.
+        let fieldsets: NodeListOf<HTMLFieldSetElement> = document.querySelectorAll("fieldset");
+        for (let i: number = 0; i < fieldsets.length; i++) {
+            let fieldset: HTMLFieldSetElement = fieldsets[i];
+            fieldset.addEventListener("change", handleChange);
+        }
+    
+    }
+
+    export function randomBetween(_min: number, _max: number): number {
+        return _min + Math.random() * (_max - _min);
+    }
+
+
+    function startSimulation(): void {
+
+        landingPage.style.display = "none"; // Damit das Formular verschwindet
+
+        // Background und Ball werden erstellt:
+        field = new Playingfield(); // Background
         
+        ball = new Ball(new Vector(500, 275));
+        moveables.push(ball);
+        
+        // Alle Menschen:
+        createPeopleonField();
+        
+        //start animation
+        animation = true;
+        animationInterval = window.setInterval(function (): void {
+            if (animation == true)
+                update();
+        },                                     20);
 
     }
 
+    function restartSimulation(): void {
+        //extra function in case we need the initialisation somewhere else
+        initialisation();
+    }
+
+    function pauseSimulation(): void {
+        if (animation == true) {
+            animation = false;
+        } else {
+            animation = true;
+        }
+    }
+
+
     function handleChange(): void {
+
+        // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
         let formData: FormData = new FormData(document.forms[0]);  // weist der Variablen formData alle fieldsets zu
-        console.log(formData);
+        // console.log(formData);
         
         minimumSpeed = Number(formData.get("MinimumSpeedSlider")); // Ich hole mir mit dem Namen "MinimumSpeedSlider" den value, in Form einer Nummer
         maximumSpeed = Number(formData.get("MaximumSpeedSlider"));
@@ -107,57 +161,90 @@ namespace Soccer {
         teamBColor = <string>formData.get("TeamBColorPicker");
     }
 
-    function startSimulation(): void {
-
-        landingPage.style.display = "none"; // Damit das Formular verschwindet
-        let field: Playingfield = new Playingfield();
-        field.draw();
-
-        let ball: Ball = new Ball(new Vector(20 + (800 / 2), 20 + (512 / 2)));
-        moveables.push(ball);
-        
-        createPlayers();
-        
-
-    }
-
-    function restartSimulation(): void {
-        landingPage.style.display = "";
-        // here reset speed, precision and color values to default 
-    }
-
-
     // AllPlayer
-    function createPlayers(): void {
+    function createPeopleonField(): void {
 
          // Spieler:
         for (let i: number = 0; i < 32; i++) {
 
-            let position: Vector = new Vector (/*position from playerInformation array*/)
-            let team: string = "A"; // from array;
-            let speed: number = 5; // randomBetween(minimumSpeed, maximumSpeed);
-            let precision: number = 2; // randomBetween(minimumPrecision, maximumPrecision);
+            let position: Vector = new Vector (playerInformation[i].x, playerInformation[i].y); // Position vom playerInformation Array 
+            let team: string = playerInformation[i].team; // from array;
+            let speed: number = randomBetween(minimumSpeed, maximumSpeed);
+            let precision: number = randomBetween(minimumPrecision, maximumPrecision);
             let jerseyNumber: number = i + 1;
 
-            const player: Player = new Player("Player", new Vector(5, 5 + (512 / 2))); // keine Ahnung wie man sie verteilt
+            let color: string = "000000"; //default value just in case
+            if (team == "A") {
+                color = teamAColor;
+            } else if (team == "B") {
+                color = teamBColor;
+            }
+
+            const player: Player = new Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
             // bekommen noch Geschwindigkeit und Präzision
 
+            //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
             allPlayers.push(player);
-
             if (jerseyNumber <= 22) {
                 moveables.push(player);
+            } else if (jerseyNumber > 22) {
+                sparePlayers.push(player);
             }
-            
             
         }
         
         // Schiedsrichter und zwei Linienmänner werden kreiert:
-        const arbit: Referee = new Referee(new Vector(20, 20 + 800));
-        const linesmanTop: Linesman = new Linesman(new Vector(20, 20 + 800 / 2));
-        const linesmanBottom: Linesman = new Linesman(new Vector(20 + 800 / 2, 20 + 800));
+        const referee: Referee = new Referee(new Vector(20, 20 + 800));
+        const linesmanTop: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, 15));
+        const linesmanBottom: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, crc2.canvas.height - 15));
         
-        // alle in Moveable pushen
-        moveables.push(arbit, linesmanTop, linesmanBottom);
+        // alle in moveables pushen
+        moveables.push(referee, linesmanTop, linesmanBottom);
+
+    }
+
+    function shootBall(_event: MouseEvent): void {
+        //get the position of the click and move the ball to this position
+        //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
+    }
+
+    function update(): void {
+        //draw the background
+        field.draw();
+        //update animation
+        for (let moveable of moveables) {
+            moveable.move();
+            moveable.draw();
+        }
+        for (let sparePlayer of sparePlayers) {
+            sparePlayer.draw();
+        }
+
+        // Score:
+        let scoreDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#score");
+        scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b>Player No ?"; //add jerseyNumber of player in possesion of the ball 
+    }
+
+    function initialisation(): void {
+        //show setings container again
+        landingPage.style.display = "";
+
+        //stop animation and reset values to default
+        animation = false;
+        minimumSpeed = 1;
+        maximumSpeed = 5;
+        minimumPrecision = 1;
+        maximumPrecision = 5;
+        teamAColor = "66b2ff";
+        teamBColor = "ff3333";
+
+        //empty arrays of current objects in the simulation
+        moveables = [];
+        allPlayers = [];
+        sparePlayers = [];
+
+        //animationsintervall beenden
+        window.clearInterval(animationInterval);
 
     }
 

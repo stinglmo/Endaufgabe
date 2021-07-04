@@ -1,19 +1,15 @@
 "use strict";
 var Soccer;
 (function (Soccer) {
-    class Referee extends Soccer.Movable {
+    class Referee extends Soccer.Moveable {
         constructor(_position) {
-            super(new Soccer.Vector(_position.X, _position.Y));
-            // set default target
-            this.target = new Soccer.Vector(_position.X, _position.Y);
-            // set radius
-            this.radius = 1.5;
+            super(_position);
         }
         draw() {
             Soccer.crc2.save();
             // draw player center
             Soccer.crc2.beginPath();
-            Soccer.crc2.arc(this.position.X, this.position.Y, this.getRadius(), 0, 2 * Math.PI, false);
+            Soccer.crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
             Soccer.crc2.fillStyle = this.color;
             Soccer.crc2.fill();
             Soccer.crc2.lineWidth = 1;

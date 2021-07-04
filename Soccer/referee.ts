@@ -1,14 +1,9 @@
 namespace Soccer {
     
-    export class Referee extends Movable {
+    export class Referee extends Moveable {
+
         constructor(_position: Vector) {
-            super(
-                new Vector(_position.X, _position.Y)
-            );
-            // set default target
-            this.target = new Vector(_position.X, _position.Y);
-            // set radius
-            this.radius = 1.5;
+            super(_position);
         }
 
         public draw(): void {
@@ -16,7 +11,7 @@ namespace Soccer {
 
             // draw player center
             crc2.beginPath();
-            crc2.arc(this.position.X, this.position.Y, this.getRadius(), 0, 2 * Math.PI, false);
+            crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
             crc2.fillStyle = this.color;
             crc2.fill();
             crc2.lineWidth = 1;

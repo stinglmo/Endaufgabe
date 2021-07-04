@@ -1,30 +1,19 @@
 namespace Soccer {
-    export class Linesman extends Movable {
-        private targetFn: () => Vector;
+    export class Linesman extends Moveable {
+       
+        public radius: number = 15;
 
         constructor(_position: Vector) {
-            super(
-                new Vector(_position.X, _position.Y)
-            );
-            this.target = new Vector(_position.X, _position.Y);
-            this.radius = 1.5;
-
-
+            super(_position);
         }
-        public setTargetFn(cb: () => Vector): void {
-            this.targetFn = cb;
-        }
-
-        public getTargetFn(): Vector {
-            return this.targetFn();
-        }
-
+     
         public draw(): void {
             crc2.save();
 
             // draw player center
             crc2.beginPath();
-            crc2.arc(this.position.X, this.position.Y, this.getRadius() , 0, 2 * Math.PI, false);
+            crc2.arc(this.position.x, this.position.y, this.radius , 0, 2 * Math.PI, false);
+            crc2.closePath();
             crc2.fillStyle = this.color;
             crc2.fill();
             crc2.lineWidth = 1;
@@ -32,6 +21,11 @@ namespace Soccer {
             crc2.stroke();
 
             crc2.restore();
+        }
+
+        move(): void {
+            //move
+            this.position.x = ball.position.x;
         }
     }
 }
