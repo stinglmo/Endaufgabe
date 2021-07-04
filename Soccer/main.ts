@@ -7,7 +7,7 @@ namespace Soccer {
     let restartbutton: HTMLSpanElement;
     let pausebutton: HTMLSpanElement;
 
-     // Folgenden 6 bekommen Formularwerte
+    // Folgenden 6 bekommen Formularwerte
     let minimumSpeed: number = 1;
     let maximumSpeed: number = 5;
     let minimumPrecision: number = 1;
@@ -31,48 +31,48 @@ namespace Soccer {
     let playerInformation: PlayerInformation[] = [
 
         // Team A
-        {x: 125, y: 275, team: "A"},
-        {x: 200, y: 150, team: "A"},
-        {x: 200, y: 400, team: "A"},
-        {x: 300, y: 75, team: "A"},
-        {x: 300, y: 225, team: "A"},
-        {x: 300, y: 325, team: "A"},
-        {x: 300, y: 475, team: "A"},
-        {x: 400, y: 150, team: "A"},
-        {x: 400, y: 400, team: "A"},
-        {x: 450, y: 275, team: "A"},
-        {x: 500, y: 75, team: "A"},
-        
-        // Team B
-        {x: 500, y: 475, team: "B"},
-        {x: 550, y: 275, team: "B"},
-        {x: 600, y: 150, team: "B"},
-        {x: 600, y: 400, team: "B"},
-        {x: 700, y: 75, team: "B"},
-        {x: 700, y: 225, team: "B"},
-        {x: 700, y: 325, team: "B"},
-        {x: 700, y: 475, team: "B"},
-        {x: 800, y: 150, team: "B"},
-        {x: 800, y: 400, team: "B"},
-        {x: 875, y: 275, team: "B"},
-        
-        // Auswechselspieler Team A
-        {x: 25, y: 125, team: "A"},
-        {x: 25, y: 200, team: "A"},
-        {x: 25, y: 275, team: "A"},
-        {x: 25, y: 350, team: "A"},
-        {x: 25, y: 425, team: "A"},
-        
-        // Auswechselspieler Team B
-        {x: 975, y: 125, team: "B"},
-        {x: 975, y: 200, team: "B"},
-        {x: 975, y: 275, team: "B"},
-        {x: 975, y: 350, team: "B"},
-        {x: 975, y: 425, team: "B"}
-        ];
+        { x: 125, y: 275, team: "A" },
+        { x: 200, y: 150, team: "A" },
+        { x: 200, y: 400, team: "A" },
+        { x: 300, y: 75, team: "A" },
+        { x: 300, y: 225, team: "A" },
+        { x: 300, y: 325, team: "A" },
+        { x: 300, y: 475, team: "A" },
+        { x: 400, y: 150, team: "A" },
+        { x: 400, y: 400, team: "A" },
+        { x: 450, y: 275, team: "A" },
+        { x: 500, y: 75, team: "A" },
 
-    let allPlayers: Player[] = [];
+        // Team B
+        { x: 500, y: 475, team: "B" },
+        { x: 550, y: 275, team: "B" },
+        { x: 600, y: 150, team: "B" },
+        { x: 600, y: 400, team: "B" },
+        { x: 700, y: 75, team: "B" },
+        { x: 700, y: 225, team: "B" },
+        { x: 700, y: 325, team: "B" },
+        { x: 700, y: 475, team: "B" },
+        { x: 800, y: 150, team: "B" },
+        { x: 800, y: 400, team: "B" },
+        { x: 875, y: 275, team: "B" },
+
+        // Auswechselspieler Team A
+        { x: 25, y: 125, team: "A" },
+        { x: 25, y: 200, team: "A" },
+        { x: 25, y: 275, team: "A" },
+        { x: 25, y: 350, team: "A" },
+        { x: 25, y: 425, team: "A" },
+
+        // Auswechselspieler Team B
+        { x: 975, y: 125, team: "B" },
+        { x: 975, y: 200, team: "B" },
+        { x: 975, y: 275, team: "B" },
+        { x: 975, y: 350, team: "B" },
+        { x: 975, y: 425, team: "B" }
+    ];
+
     let moveables: Moveable[] = [];
+    let allPlayers: Player[] = [];
     let sparePlayers: Player[] = [];
 
     window.addEventListener("load", handleLoad);
@@ -102,7 +102,7 @@ namespace Soccer {
             let fieldset: HTMLFieldSetElement = fieldsets[i];
             fieldset.addEventListener("change", handleChange);
         }
-    
+
     }
 
     export function randomBetween(_min: number, _max: number): number {
@@ -116,13 +116,13 @@ namespace Soccer {
 
         // Background und Ball werden erstellt:
         field = new Playingfield(); // Background
-        
+
         ball = new Ball(new Vector(500, 275));
         moveables.push(ball);
-        
+
         // Alle Menschen:
         createPeopleonField();
-        
+
         //start animation
         animation = true;
         animationInterval = window.setInterval(function (): void {
@@ -151,7 +151,7 @@ namespace Soccer {
         // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
         let formData: FormData = new FormData(document.forms[0]);  // weist der Variablen formData alle fieldsets zu
         // console.log(formData);
-        
+
         minimumSpeed = Number(formData.get("MinimumSpeedSlider")); // Ich hole mir mit dem Namen "MinimumSpeedSlider" den value, in Form einer Nummer
         maximumSpeed = Number(formData.get("MaximumSpeedSlider"));
         minimumPrecision = Number(formData.get("MinimumPrecisionSlider"));
@@ -164,10 +164,10 @@ namespace Soccer {
     // AllPlayer
     function createPeopleonField(): void {
 
-         // Spieler:
+        // Spieler:
         for (let i: number = 0; i < 32; i++) {
 
-            let position: Vector = new Vector (playerInformation[i].x, playerInformation[i].y); // Position vom playerInformation Array 
+            let position: Vector = new Vector(playerInformation[i].x, playerInformation[i].y); // Position vom playerInformation Array 
             let team: string = playerInformation[i].team; // from array;
             let speed: number = randomBetween(minimumSpeed, maximumSpeed);
             let precision: number = randomBetween(minimumPrecision, maximumPrecision);
@@ -190,14 +190,14 @@ namespace Soccer {
             } else if (jerseyNumber > 22) {
                 sparePlayers.push(player);
             }
-            
+
         }
-        
+
         // Schiedsrichter und zwei Linienmänner werden kreiert:
         const referee: Referee = new Referee(new Vector(20, 20 + 800));
         const linesmanTop: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, 15));
         const linesmanBottom: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, crc2.canvas.height - 15));
-        
+
         // alle in moveables pushen
         moveables.push(referee, linesmanTop, linesmanBottom);
 

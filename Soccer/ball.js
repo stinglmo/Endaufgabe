@@ -16,6 +16,22 @@ var Soccer;
             Soccer.crc2.lineWidth = 1;
             Soccer.crc2.strokeStyle = "black";
             Soccer.crc2.stroke();
+            Soccer.crc2.beginPath();
+            Soccer.crc2.moveTo(this.position.x, this.position.y - 10);
+            Soccer.crc2.lineTo(this.position.x, this.position.y - 2);
+            Soccer.crc2.stroke();
+            Soccer.crc2.beginPath();
+            Soccer.crc2.moveTo(this.position.x, this.position.y + 2);
+            Soccer.crc2.lineTo(this.position.x, this.position.y + 10);
+            Soccer.crc2.stroke();
+            Soccer.crc2.beginPath();
+            Soccer.crc2.moveTo(this.position.x - 10, this.position.y);
+            Soccer.crc2.lineTo(this.position.x - 2, this.position.y);
+            Soccer.crc2.stroke();
+            Soccer.crc2.beginPath();
+            Soccer.crc2.moveTo(this.position.x + 2, this.position.y);
+            Soccer.crc2.lineTo(this.position.x + 10, this.position.y);
+            Soccer.crc2.stroke();
             Soccer.crc2.restore();
         }
         // erstmal so

@@ -21,6 +21,26 @@ namespace Soccer {
             crc2.strokeStyle = "black";
             crc2.stroke();
 
+            crc2.beginPath();
+            crc2.moveTo(this.position.x, this.position.y - 10);
+            crc2.lineTo(this.position.x, this.position.y - 2);
+            crc2.stroke();
+
+            crc2.beginPath();
+            crc2.moveTo(this.position.x, this.position.y + 2);
+            crc2.lineTo(this.position.x, this.position.y + 10);
+            crc2.stroke();
+
+            crc2.beginPath();
+            crc2.moveTo(this.position.x - 10, this.position.y);
+            crc2.lineTo(this.position.x - 2, this.position.y);
+            crc2.stroke();
+
+            crc2.beginPath();
+            crc2.moveTo(this.position.x + 2, this.position.y);
+            crc2.lineTo(this.position.x + 10, this.position.y);
+            crc2.stroke();
+
 
             crc2.restore();
         }

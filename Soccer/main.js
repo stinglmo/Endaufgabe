@@ -55,8 +55,8 @@ var Soccer;
         { x: 975, y: 350, team: "B" },
         { x: 975, y: 425, team: "B" }
     ];
-    let allPlayers = [];
     let moveables = [];
+    let allPlayers = [];
     let sparePlayers = [];
     window.addEventListener("load", handleLoad);
     function handleLoad() {

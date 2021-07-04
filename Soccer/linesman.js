@@ -12,7 +12,7 @@ var Soccer;
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
             Soccer.crc2.closePath();
-            Soccer.crc2.fillStyle = this.color;
+            Soccer.crc2.fillStyle = "#FFFF00"; // gelb
             Soccer.crc2.fill();
             Soccer.crc2.lineWidth = 1;
             Soccer.crc2.strokeStyle = "#003300";
