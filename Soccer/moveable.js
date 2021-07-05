@@ -11,7 +11,7 @@ var Soccer;
             //
         }
         // Keine Ahnung ob das Sinn macht... (ist für die Player, die anderen Menschen überschrieben die move-Methode)
-        move() {
+        move(_target) {
             // if (!target) { return; } // wenn es kein Target gibt
             // // Diff Vector kalkulieren
             // const diffVectr: Vector = new Vector(

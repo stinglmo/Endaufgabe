@@ -19,7 +19,7 @@ namespace Soccer {
 
         
         // Keine Ahnung ob das Sinn macht... (ist für die Player, die anderen Menschen überschrieben die move-Methode)
-        public move(): void { // target: Vector rausgelöscht
+        public move(_target: Vector): void { // target: Vector rausgelöscht und _x/_y hinzugefügt
 
             // if (!target) { return; } // wenn es kein Target gibt
 

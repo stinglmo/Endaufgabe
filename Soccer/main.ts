@@ -172,8 +172,8 @@ namespace Soccer {
             let speed: number = randomBetween(minimumSpeed, maximumSpeed);
             let precision: number = randomBetween(minimumPrecision, maximumPrecision);
             let jerseyNumber: number = i + 1;
-
             let color: string = "000000"; //default value just in case
+
             if (team == "A") {
                 color = teamAColor;
             } else if (team == "B") {
@@ -194,7 +194,7 @@ namespace Soccer {
         }
 
         // Schiedsrichter und zwei Linienmänner werden kreiert:
-        const referee: Referee = new Referee(new Vector(20, 20 + 800));
+        const referee: Referee = new Referee(new Vector(600, 300));
         const linesmanTop: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, 15));
         const linesmanBottom: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, crc2.canvas.height - 15));
 
@@ -203,8 +203,23 @@ namespace Soccer {
 
     }
 
+    // Ab hier bis Ende shootBall neu:
     function shootBall(_event: MouseEvent): void {
+
         //get the position of the click and move the ball to this position
+        
+        // Mouseposition:
+        let xpos: number = _event.clientX;
+        let ypos: number = _event.clientY;
+
+        
+
+        // Eine neue random Position wird kalkuliert, innerhalb des Präzisionsradius vom Spieler
+        // const randomX: number = randomBetween(minimumPrecision, maximumPrecision);
+        // const randomY: number = randomBetween(minimumPrecision, maximumPrecision);
+
+        ball.move(new Vector(xpos, ypos));
+       
         //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
     }
 

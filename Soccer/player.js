@@ -17,16 +17,16 @@ var Soccer;
             // draw player center
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
+            Soccer.crc2.closePath();
             Soccer.crc2.fillStyle = this.color;
             Soccer.crc2.fill();
             Soccer.crc2.lineWidth = 2;
             Soccer.crc2.strokeStyle = "#003300";
             Soccer.crc2.stroke();
-            // So müsste die Nummer irgendwie reinzuschreiben sein
-            // crc2.textBaseline = "middle";
-            // crc2.textAlign = "center";
-            // crc2.fillStyle = "white"; 
-            // crc2.fillText(this.getTricotNumber().toString(), this.position.X, this.position.Y);
+            Soccer.crc2.textBaseline = "middle";
+            Soccer.crc2.textAlign = "center";
+            Soccer.crc2.fillStyle = "black";
+            Soccer.crc2.fillText(this.jerseyNumber.toString(), this.position.x, this.position.y);
             Soccer.crc2.restore();
         }
     }

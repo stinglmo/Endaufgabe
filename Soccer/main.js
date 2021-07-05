@@ -152,14 +152,22 @@ var Soccer;
             }
         }
         // Schiedsrichter und zwei Linienmänner werden kreiert:
-        const referee = new Soccer.Referee(new Soccer.Vector(20, 20 + 800));
+        const referee = new Soccer.Referee(new Soccer.Vector(600, 300));
         const linesmanTop = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, 15));
         const linesmanBottom = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, Soccer.crc2.canvas.height - 15));
         // alle in moveables pushen
         moveables.push(referee, linesmanTop, linesmanBottom);
     }
+    // Ab hier bis Ende shootBall neu:
     function shootBall(_event) {
         //get the position of the click and move the ball to this position
+        // Mouseposition:
+        let xpos = _event.clientX;
+        let ypos = _event.clientY;
+        // Eine neue random Position wird kalkuliert, innerhalb des Präzisionsradius vom Spieler
+        // const randomX: number = randomBetween(minimumPrecision, maximumPrecision);
+        // const randomY: number = randomBetween(minimumPrecision, maximumPrecision);
+        Soccer.ball.move(new Soccer.Vector(xpos, ypos));
         //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
     }
     function update() {
