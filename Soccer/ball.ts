@@ -5,6 +5,7 @@ namespace Soccer {
         
         public radius: number = 10;
         public destination: Vector; //position of the click where the ball will roll to
+        public startMoving: boolean = false;
 
         constructor(_position: Vector) {
             super(_position);
@@ -119,14 +120,29 @@ namespace Soccer {
             crc2.restore();
         }
 
-        // erstmal so
-        move(_target: Vector): void { // geändert
-            //move
+        
+        move(): void {
             
-            let direction: 
+            // Wenn es eine Destination gibt, bewegt sich der Ball dorthin (also nach einem Klick)
+            if (this.destination) {
+                let direction: Vector = new Vector(this.destination.x - this.position.x, this.destination.y - this.position.y);
             
-            let xDiff: number = this.xTarget - this.x;
-            let yDiff: number = this.yTarget - this.y;
+                //je weiter die Destination vom Ball weg ist, desto ungenauer ist der Schuss 
+                //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
+                if (this.startMoving == true) {
+                    let distance: number = (Math.random() - 0.5) * (0.15 * direction.length);
+                    this.destination.x += distance;
+                    this.destination.y += distance; // y
+                    this.startMoving = false;
+                }
+
+                // jede 50fps
+                direction.scale(1 / 50);
+                this.position.add(direction);
+
+                
+    
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ namespace Soccer {
     let animation: boolean = false;
     let animationInterval: number;
     export let ball: Ball;
+    export let player: Player;
 
     interface PlayerInformation {
         x: number;
@@ -96,13 +97,6 @@ namespace Soccer {
         pausebutton.addEventListener("click", pauseSimulation);
         canvas.addEventListener("click", shootBall);
 
-        //Der ChangeListener wird für alle Fieldset-Elemente installiert um das Formular auszuwerten.
-        let fieldsets: NodeListOf<HTMLFieldSetElement> = document.querySelectorAll("fieldset");
-        for (let i: number = 0; i < fieldsets.length; i++) {
-            let fieldset: HTMLFieldSetElement = fieldsets[i];
-            fieldset.addEventListener("change", handleChange);
-        }
-
     }
 
     export function randomBetween(_min: number, _max: number): number {
@@ -113,6 +107,9 @@ namespace Soccer {
     function startSimulation(): void {
 
         landingPage.style.display = "none"; // Damit das Formular verschwindet
+
+        // Formularauswertung:
+        getUserPreferences();
 
         // Background und Ball werden erstellt:
         field = new Playingfield(); // Background
@@ -146,9 +143,9 @@ namespace Soccer {
     }
 
 
-    function handleChange(): void {
+    function getUserPreferences(): void {
 
-        // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
+        // FormData - Objekt um die Werte des Formulars auszuwerten!
         let formData: FormData = new FormData(document.forms[0]);  // weist der Variablen formData alle fieldsets zu
         // console.log(formData);
 
@@ -157,7 +154,7 @@ namespace Soccer {
         minimumPrecision = Number(formData.get("MinimumPrecisionSlider"));
         maximumPrecision = Number(formData.get("MaximumPrecisionSlider"));
 
-        teamAColor = <string>formData.get("TeamAColorPicker"); // warum  string? Ich habs ohne
+        teamAColor = <string>formData.get("TeamAColorPicker"); //wir wissen, dass es ein string ist!
         teamBColor = <string>formData.get("TeamBColorPicker");
     }
 
@@ -180,7 +177,7 @@ namespace Soccer {
                 color = teamBColor;
             }
 
-            const player: Player = new Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
+            player = new Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
             // bekommen noch Geschwindigkeit und Präzision
 
             //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
@@ -209,28 +206,52 @@ namespace Soccer {
         //get the position of the click and move the ball to this position
         
         // Mouseposition:
-        let xpos: number = _event.clientX;
-        let ypos: number = _event.clientY;
-
-        
+        let xpos: number = 0;
+        let ypos: number = 0;
 
         // Eine neue random Position wird kalkuliert, innerhalb des Präzisionsradius vom Spieler
         // const randomX: number = randomBetween(minimumPrecision, maximumPrecision);
         // const randomY: number = randomBetween(minimumPrecision, maximumPrecision);
 
-        ball.move(new Vector(xpos, ypos));
-       
-        //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
+        // Damit man wirklich nur auf dem Fußballfeld klicken kann
+        if (_event.offsetX > 75 && _event.offsetX < 925) {
+            xpos = _event.offsetX;
+        }
+        if (_event.offsetY > 0 && _event.offsetY < 550) {
+            ypos = _event.offsetY;
+        }
+
+        //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
+        if (xpos > 0 && ypos > 0) {
+            ball.destination = new Vector(xpos, ypos);
+            ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
+            
+        }
+
+        // Wenn im Ziel A, Counter zählt hoch:
+        if (ball.position.x < 100 && ball.position.y > 250 && ball.position.y < 300) {
+            goalsA += 1;
+        }
+        // Wenn im Ziel B, Counter zählt hoch:
+        if (ball.position.x > 900 && ball.position.y > 250 && ball.position.y < 300) {
+            goalsB += 1;
+        }
+
+        // People rennen hinterher:
+
     }
 
     function update(): void {
-        //draw the background
+
+        // Draw the Playingfield
         field.draw();
-        //update animation
+
+        // Update animation
         for (let moveable of moveables) {
-            moveable.move();
+            moveable.move(); // Player bewegen sich
             moveable.draw();
         }
+        // Auswechselspieler
         for (let sparePlayer of sparePlayers) {
             sparePlayer.draw();
         }
@@ -241,7 +262,7 @@ namespace Soccer {
     }
 
     function initialisation(): void {
-        //show setings container again
+        // Einstellungsformular wird wieder angezeigt
         landingPage.style.display = "";
 
         //stop animation and reset values to default
@@ -258,10 +279,56 @@ namespace Soccer {
         allPlayers = [];
         sparePlayers = [];
 
-        //animationsintervall beenden
+        // Animationsintervall beenden
         window.clearInterval(animationInterval);
 
     }
+
+    // function createDraggableElement(): void {
+
+        
+    //     const s: HTMLSpanElement = document.createElement("span");
+
+    //     // enable dragability
+    //     s.setAttribute("draggable", "true");
+
+    //     // rect 1 und rect 2 sind dann die zu tauschenden Canvas
+    //     let buffer_x = rect1.x, buffer_y = rect1.y;
+    //     rect1.reposition(rect2.x,rect2.y);
+    //     rect2.reposition(buffer_x,buffer_y);
+    //     rect1.draw();
+    //     rect2.draw();
+
+    //     // add listener for dragend to swap players
+    //     s.addEventListener("dragend", (e: DragEvent) => {
+    //         // get player directly under the mouse
+    //         const p: Player | undefined = player;
+    //             const v: Vector = new Vector(
+    //                 canvas.position.x + p.this.position.x,
+    //                 canvas.position.y + p.this.position.x
+    //             );
+    //             return distance(v, new Vector(e.clientX, e.clientY)) - player.getRadius() * 2 <= 0;
+    //         });
+
+    //         // if there was a player on dragend swap both
+    //         if (p) {
+    //             // set current active player to inactive
+    //             p.setActive(false);
+    //             player.setActive(true);
+
+    //             // swap subsitutes origin with players origin
+    //             player.setOrigin(new Vector(p.getOrigin().X, p.getOrigin().Y));
+
+    //             // swap subsitutes position with players position
+    //             player.setPosition(new Vector(p.getPosition().X, p.getPosition().Y));
+
+    //             // executes callbacl
+    //             cb();
+    //         }
+
+
+    //     });
+
 
 
 } // close namespace

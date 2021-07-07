@@ -1,8 +1,6 @@
 namespace Soccer {
     //Jirkas Code (Asteroids/vector.ts)
 
-    export let scale: number = 5; // Skale (wird auch bei getRadius in Moveable gebraucht)
-
     export class Vector {
         public x: number;
         public y: number;
@@ -35,12 +33,12 @@ namespace Soccer {
             this.y += _added.y;
         }
 
-        // Keine Ahnung ob das so passt haha
-        public distance(v1: Vector, v2: Vector): number {
-            let d: number = Math.sqrt(Math.pow(v2.x - v1.x, 2) +
-                Math.pow(v2.y - v1.y, 2));
-            return d;
-        }
+        // // Keine Ahnung ob das so passt haha
+        // public distance(v1: Vector, v2: Vector): number {
+        //     let d: number = Math.sqrt(Math.pow(v2.x - v1.x, 2) +
+        //         Math.pow(v2.y - v1.y, 2));
+        //     return d;
+        // }
 
         
     }

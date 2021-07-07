@@ -5,6 +5,7 @@ var Soccer;
         constructor(_position) {
             super(_position);
             this.radius = 10;
+            this.startMoving = false;
         }
         draw() {
             Soccer.crc2.save();
@@ -99,11 +100,22 @@ var Soccer;
             Soccer.crc2.stroke();
             Soccer.crc2.restore();
         }
-        // erstmal so
-        move(_target) {
-            //move
-            let direction, xDiff = this.xTarget - this.x;
-            let yDiff = this.yTarget - this.y;
+        move() {
+            // Wenn es eine Destination gibt, bewegt sich der Ball dorthin (also nach einem Klick)
+            if (this.destination) {
+                let direction = new Soccer.Vector(this.destination.x - this.position.x, this.destination.y - this.position.y);
+                //je weiter die Destination vom Ball weg ist, desto ungenauer ist der Schuss 
+                //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
+                if (this.startMoving == true) {
+                    let distance = (Math.random() - 0.5) * (0.15 * direction.length);
+                    this.destination.x += distance;
+                    this.destination.y += distance; // y
+                    this.startMoving = false;
+                }
+                // jede 50fps
+                direction.scale(1 / 50);
+                this.position.add(direction);
+            }
         }
     }
     Soccer.Ball = Ball;

@@ -75,12 +75,6 @@ var Soccer;
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
         canvas.addEventListener("click", shootBall);
-        //Der ChangeListener wird für alle Fieldset-Elemente installiert um das Formular auszuwerten.
-        let fieldsets = document.querySelectorAll("fieldset");
-        for (let i = 0; i < fieldsets.length; i++) {
-            let fieldset = fieldsets[i];
-            fieldset.addEventListener("change", handleChange);
-        }
     }
     function randomBetween(_min, _max) {
         return _min + Math.random() * (_max - _min);
@@ -88,6 +82,8 @@ var Soccer;
     Soccer.randomBetween = randomBetween;
     function startSimulation() {
         landingPage.style.display = "none"; // Damit das Formular verschwindet
+        // Formularauswertung:
+        getUserPreferences();
         // Background und Ball werden erstellt:
         field = new Soccer.Playingfield(); // Background
         Soccer.ball = new Soccer.Ball(new Soccer.Vector(500, 275));
@@ -113,15 +109,15 @@ var Soccer;
             animation = true;
         }
     }
-    function handleChange() {
-        // FormData - Objekt um in der HandleChange Funktion die Werte des Formulars auszuwerten!
+    function getUserPreferences() {
+        // FormData - Objekt um die Werte des Formulars auszuwerten!
         let formData = new FormData(document.forms[0]); // weist der Variablen formData alle fieldsets zu
         // console.log(formData);
         minimumSpeed = Number(formData.get("MinimumSpeedSlider")); // Ich hole mir mit dem Namen "MinimumSpeedSlider" den value, in Form einer Nummer
         maximumSpeed = Number(formData.get("MaximumSpeedSlider"));
         minimumPrecision = Number(formData.get("MinimumPrecisionSlider"));
         maximumPrecision = Number(formData.get("MaximumPrecisionSlider"));
-        teamAColor = formData.get("TeamAColorPicker"); // warum  string? Ich habs ohne
+        teamAColor = formData.get("TeamAColorPicker"); //wir wissen, dass es ein string ist!
         teamBColor = formData.get("TeamBColorPicker");
     }
     // AllPlayer
@@ -140,15 +136,15 @@ var Soccer;
             else if (team == "B") {
                 color = teamBColor;
             }
-            const player = new Soccer.Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
+            Soccer.player = new Soccer.Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
             // bekommen noch Geschwindigkeit und Präzision
             //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
-            allPlayers.push(player);
+            allPlayers.push(Soccer.player);
             if (jerseyNumber <= 22) {
-                moveables.push(player);
+                moveables.push(Soccer.player);
             }
             else if (jerseyNumber > 22) {
-                sparePlayers.push(player);
+                sparePlayers.push(Soccer.player);
             }
         }
         // Schiedsrichter und zwei Linienmänner werden kreiert:
@@ -162,22 +158,42 @@ var Soccer;
     function shootBall(_event) {
         //get the position of the click and move the ball to this position
         // Mouseposition:
-        let xpos = _event.clientX;
-        let ypos = _event.clientY;
+        let xpos = 0;
+        let ypos = 0;
         // Eine neue random Position wird kalkuliert, innerhalb des Präzisionsradius vom Spieler
         // const randomX: number = randomBetween(minimumPrecision, maximumPrecision);
         // const randomY: number = randomBetween(minimumPrecision, maximumPrecision);
-        Soccer.ball.move(new Soccer.Vector(xpos, ypos));
-        //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
+        // Damit man wirklich nur auf dem Fußballfeld klicken kann
+        if (_event.offsetX > 75 && _event.offsetX < 925) {
+            xpos = _event.offsetX;
+        }
+        if (_event.offsetY > 0 && _event.offsetY < 550) {
+            ypos = _event.offsetY;
+        }
+        //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
+        if (xpos > 0 && ypos > 0) {
+            Soccer.ball.destination = new Soccer.Vector(xpos, ypos);
+            Soccer.ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
+        }
+        // Wenn im Ziel A, Counter zählt hoch:
+        if (Soccer.ball.position.x < 100 && Soccer.ball.position.y > 250 && Soccer.ball.position.y < 300) {
+            goalsA += 1;
+        }
+        // Wenn im Ziel B, Counter zählt hoch:
+        if (Soccer.ball.position.x > 900 && Soccer.ball.position.y > 250 && Soccer.ball.position.y < 300) {
+            goalsB += 1;
+        }
+        // People rennen hinterher:
     }
     function update() {
-        //draw the background
+        // Draw the Playingfield
         field.draw();
-        //update animation
+        // Update animation
         for (let moveable of moveables) {
-            moveable.move();
+            moveable.move(); // Player bewegen sich
             moveable.draw();
         }
+        // Auswechselspieler
         for (let sparePlayer of sparePlayers) {
             sparePlayer.draw();
         }
@@ -186,7 +202,7 @@ var Soccer;
         scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b>Player No ?"; //add jerseyNumber of player in possesion of the ball 
     }
     function initialisation() {
-        //show setings container again
+        // Einstellungsformular wird wieder angezeigt
         landingPage.style.display = "";
         //stop animation and reset values to default
         animation = false;
@@ -200,8 +216,41 @@ var Soccer;
         moveables = [];
         allPlayers = [];
         sparePlayers = [];
-        //animationsintervall beenden
+        // Animationsintervall beenden
         window.clearInterval(animationInterval);
     }
+    // function createDraggableElement(): void {
+    //     const s: HTMLSpanElement = document.createElement("span");
+    //     // enable dragability
+    //     s.setAttribute("draggable", "true");
+    //     // rect 1 und rect 2 sind dann die zu tauschenden Canvas
+    //     let buffer_x = rect1.x, buffer_y = rect1.y;
+    //     rect1.reposition(rect2.x,rect2.y);
+    //     rect2.reposition(buffer_x,buffer_y);
+    //     rect1.draw();
+    //     rect2.draw();
+    //     // add listener for dragend to swap players
+    //     s.addEventListener("dragend", (e: DragEvent) => {
+    //         // get player directly under the mouse
+    //         const p: Player | undefined = player;
+    //             const v: Vector = new Vector(
+    //                 canvas.position.x + p.this.position.x,
+    //                 canvas.position.y + p.this.position.x
+    //             );
+    //             return distance(v, new Vector(e.clientX, e.clientY)) - player.getRadius() * 2 <= 0;
+    //         });
+    //         // if there was a player on dragend swap both
+    //         if (p) {
+    //             // set current active player to inactive
+    //             p.setActive(false);
+    //             player.setActive(true);
+    //             // swap subsitutes origin with players origin
+    //             player.setOrigin(new Vector(p.getOrigin().X, p.getOrigin().Y));
+    //             // swap subsitutes position with players position
+    //             player.setPosition(new Vector(p.getPosition().X, p.getPosition().Y));
+    //             // executes callbacl
+    //             cb();
+    //         }
+    //     });
 })(Soccer || (Soccer = {})); // close namespace
 //# sourceMappingURL=main.js.map
