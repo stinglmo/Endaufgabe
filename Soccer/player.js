@@ -5,15 +5,16 @@ var Soccer;
     class Player extends Soccer.Moveable {
         constructor(_position, _team, _color, _speed, _precision, _jerseyNumber) {
             super(_position);
+            // public position: Vector;
             this.radius = 15;
-            this.startMoving = false; // neu dazu
+            // public startMoving: boolean = false; // neu dazu
             this.perceptionRadius = 160;
-            this.origin = new Soccer.Vector(0, 0); // Origin
             this.team = _team;
             this.color = _color;
             this.speed = _speed;
             this.precision = _precision;
             this.jerseyNumber = _jerseyNumber;
+            this.startPosition = _position; // ist die Position aus seinem Startarray
         }
         draw() {
             Soccer.crc2.save();
@@ -31,33 +32,50 @@ var Soccer;
             Soccer.crc2.fillStyle = "black";
             Soccer.crc2.fillText(this.jerseyNumber.toString(), this.position.x, this.position.y);
             // Radius zum überprüfen 
-            Soccer.crc2.beginPath();
-            Soccer.crc2.arc(this.position.x, this.position.y, this.perceptionRadius, 0, 2 * Math.PI, false);
-            Soccer.crc2.lineWidth = 1;
-            Soccer.crc2.strokeStyle = "#6D6D6D";
-            Soccer.crc2.stroke();
+            // crc2.beginPath();
+            // crc2.arc(this.position.x, this.position.y, this.perceptionRadius, 0, 2 * Math.PI, false);
+            // crc2.lineWidth = 1;
+            // crc2.strokeStyle = "#6D6D6D";
+            // crc2.stroke();
             Soccer.crc2.restore();
-        }
-        // Keine Ahnung ob das so passt haha
-        distance(v1, v2) {
-            let d = Math.sqrt(Math.pow(v2.x - v1.x, 2) +
-                Math.pow(v2.y - v1.y, 2));
-            return d;
         }
         // neu dazu
         move() {
-            let v1 = new Soccer.Vector(Soccer.ball.position.x, Soccer.ball.position.y);
-            let v2 = new Soccer.Vector(Soccer.player.position.x, Soccer.player.position.y);
-            let d = Math.sqrt(Math.pow(v2.x - v1.x, 2) +
-                Math.pow(v2.y - v1.y, 2));
-            // So lange der Ball im Wahrnehmungsradius ist, bewegt er sich dorthin (also die Distanz muss kleiner sein als der Radius)                          
-            if (d <= this.perceptionRadius) { // Differenz der Playerposition und Ballposition muss kleiner sein als der Radius
-                Soccer.player.direction = new Soccer.Vector(Soccer.ball.position.x, Soccer.ball.position.y);
-                Soccer.player.startMoving = true;
+            //move
+            //check if ball is in his perception radius (difference between player position and ball position smaller than perception radius)
+            //1. Distanz zum Ball ausrechnen
+            let vectorToBall = new Soccer.Vector(Soccer.ball.position.x - this.position.x, Soccer.ball.position.y - this.position.y); //differenzvektor
+            let distanceToBall = vectorToBall.length; //länge des differenzvektors
+            let vectorToStartposition = new Soccer.Vector(this.startPosition.x - this.position.x, this.startPosition.y - this.position.y); //differenzvektor
+            let distanceToStartposition = vectorToStartposition.length; //länge des differenzvektors
+            //2. Checken, ob Distanz kleiner ist als der Wahnehmungsradius des Spielers
+            if (distanceToBall < this.perceptionRadius) {
+                //move towards ball
+                //gleichmäßig bewegen: wie muss der faktor sein, mit dem direction skaliert wird, damit die länge von direction speed entspricht?
+                //speed / direction.length = skalierungsfaktor. Speed wäre 1px --> 50px/sekunde
+                let scale = 1 / distanceToBall;
+                vectorToBall.scale(scale);
+                this.position.add(vectorToBall);
+                //if difference between ball and player is smaller than 25, animation = false
+                //wenn spieler am Ball ankommt, stoppt animation
+                if (distanceToBall > 23 && distanceToBall < 26) {
+                    Soccer.animation = false;
+                }
             }
-            else {
-                Soccer.player.direction = this.origin;
+            else if (distanceToStartposition > 0) {
+                //spieler läuft zurück zu seiner startposition
+                let scale = 1 / distanceToStartposition;
+                vectorToStartposition.scale(scale);
+                this.position.add(vectorToStartposition);
             }
+            // Zurückgehen zur Startposition
+            // Move mit scale checken
+            // Speed muss noch überlegen bei Player move 
+            // CustomEvent Haupt
+            // Ball leichter weg zu bekommen vom Spieler 
+            // Informationen anzeigen lassen vom Player 
+            // Auswechseln 
+            // Spieler Ballbesitz
             // Jede 50fps
             // this.direction.scale(1 / 50);
             // this.position.add(this.direction);

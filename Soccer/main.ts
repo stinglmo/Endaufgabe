@@ -18,10 +18,14 @@ namespace Soccer {
     let goalsA: number = 0;
     let goalsB: number = 0;
     let field: Playingfield;
-    let animation: boolean = false;
+    export let animation: boolean = false; // damit im Player drauf zugreifen kann
     let animationInterval: number;
     export let ball: Ball;
-    export let player: Player;
+    
+    export enum SOCCER_EVENT {
+        RIGHTGOAL_HIT = "rightGoalHit", // zum hochzählen
+        LEFTGOAL_HIT = "leftGoalHit"
+    }
 
     interface PlayerInformation {
         x: number;
@@ -32,9 +36,9 @@ namespace Soccer {
     let playerInformation: PlayerInformation[] = [
 
         // Team A
-        { x: 125, y: 275, team: "A" },
-        { x: 200, y: 150, team: "A" },
-        { x: 200, y: 400, team: "A" },
+        { x: 135, y: 275, team: "A" },
+        { x: 180, y: 100, team: "A" },
+        { x: 180, y: 450, team: "A" },
         { x: 300, y: 75, team: "A" },
         { x: 300, y: 225, team: "A" },
         { x: 300, y: 325, team: "A" },
@@ -53,9 +57,9 @@ namespace Soccer {
         { x: 700, y: 225, team: "B" },
         { x: 700, y: 325, team: "B" },
         { x: 700, y: 475, team: "B" },
-        { x: 800, y: 150, team: "B" },
-        { x: 800, y: 400, team: "B" },
-        { x: 875, y: 275, team: "B" },
+        { x: 820, y: 100, team: "B" },
+        { x: 820, y: 450, team: "B" },
+        { x: 865, y: 275, team: "B" },
 
         // Auswechselspieler Team A
         { x: 25, y: 125, team: "A" },
@@ -96,6 +100,8 @@ namespace Soccer {
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
         canvas.addEventListener("click", shootBall);
+        crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
+        crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
 
     }
 
@@ -161,6 +167,14 @@ namespace Soccer {
     // AllPlayer
     function createPeopleonField(): void {
 
+        // Schiedsrichter und zwei Linienmänner werden kreiert:
+        const referee: Referee = new Referee(new Vector(600, 300));
+        const linesmanTop: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, 15));
+        const linesmanBottom: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, crc2.canvas.height - 15));
+
+        // alle in moveables pushen
+        moveables.push(referee, linesmanTop, linesmanBottom);
+
         // Spieler:
         for (let i: number = 0; i < 32; i++) {
 
@@ -177,7 +191,7 @@ namespace Soccer {
                 color = teamBColor;
             }
 
-            player = new Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
+            const player: Player = new Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
             // bekommen noch Geschwindigkeit und Präzision
 
             //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
@@ -190,18 +204,14 @@ namespace Soccer {
 
         }
 
-        // Schiedsrichter und zwei Linienmänner werden kreiert:
-        const referee: Referee = new Referee(new Vector(600, 300));
-        const linesmanTop: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, 15));
-        const linesmanBottom: Linesman = new Linesman(new Vector(crc2.canvas.width / 2, crc2.canvas.height - 15));
-
-        // alle in moveables pushen
-        moveables.push(referee, linesmanTop, linesmanBottom);
-
     }
 
     // Ab hier bis Ende shootBall neu:
     function shootBall(_event: MouseEvent): void {
+
+        //to be able to check goals, set hitGoalA & hitGoalsB from ball to true
+        ball.hitGoalA = false;
+        ball.hitGoalB = false;
 
         //get the position of the click and move the ball to this position
         
@@ -225,20 +235,20 @@ namespace Soccer {
         if (xpos > 0 && ypos > 0) {
             ball.destination = new Vector(xpos, ypos);
             ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
-            
+            animation = true;
         }
 
-        // Wenn im Ziel A, Counter zählt hoch:
-        if (ball.position.x < 100 && ball.position.y > 250 && ball.position.y < 300) {
-            goalsA += 1;
-        }
-        // Wenn im Ziel B, Counter zählt hoch:
-        if (ball.position.x > 900 && ball.position.y > 250 && ball.position.y < 300) {
-            goalsB += 1;
-        }
 
         // People rennen hinterher:
 
+    }
+
+    function handleLeftGoal(): void {
+        goalsB ++;
+    }
+
+    function handleRightGoal(): void {
+        goalsA ++;
     }
 
     function update(): void {

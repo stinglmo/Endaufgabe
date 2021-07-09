@@ -15,13 +15,18 @@ var Soccer;
     let goalsA = 0;
     let goalsB = 0;
     let field;
-    let animation = false;
+    Soccer.animation = false; // damit im Player drauf zugreifen kann
     let animationInterval;
+    let SOCCER_EVENT;
+    (function (SOCCER_EVENT) {
+        SOCCER_EVENT["RIGHTGOAL_HIT"] = "rightGoalHit";
+        SOCCER_EVENT["LEFTGOAL_HIT"] = "leftGoalHit";
+    })(SOCCER_EVENT = Soccer.SOCCER_EVENT || (Soccer.SOCCER_EVENT = {}));
     let playerInformation = [
         // Team A
-        { x: 125, y: 275, team: "A" },
-        { x: 200, y: 150, team: "A" },
-        { x: 200, y: 400, team: "A" },
+        { x: 135, y: 275, team: "A" },
+        { x: 180, y: 100, team: "A" },
+        { x: 180, y: 450, team: "A" },
         { x: 300, y: 75, team: "A" },
         { x: 300, y: 225, team: "A" },
         { x: 300, y: 325, team: "A" },
@@ -39,9 +44,9 @@ var Soccer;
         { x: 700, y: 225, team: "B" },
         { x: 700, y: 325, team: "B" },
         { x: 700, y: 475, team: "B" },
-        { x: 800, y: 150, team: "B" },
-        { x: 800, y: 400, team: "B" },
-        { x: 875, y: 275, team: "B" },
+        { x: 820, y: 100, team: "B" },
+        { x: 820, y: 450, team: "B" },
+        { x: 865, y: 275, team: "B" },
         // Auswechselspieler Team A
         { x: 25, y: 125, team: "A" },
         { x: 25, y: 200, team: "A" },
@@ -75,6 +80,8 @@ var Soccer;
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
         canvas.addEventListener("click", shootBall);
+        Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
+        Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
     }
     function randomBetween(_min, _max) {
         return _min + Math.random() * (_max - _min);
@@ -91,9 +98,9 @@ var Soccer;
         // Alle Menschen:
         createPeopleonField();
         //start animation
-        animation = true;
+        Soccer.animation = true;
         animationInterval = window.setInterval(function () {
-            if (animation == true)
+            if (Soccer.animation == true)
                 update();
         }, 20);
     }
@@ -102,11 +109,11 @@ var Soccer;
         initialisation();
     }
     function pauseSimulation() {
-        if (animation == true) {
-            animation = false;
+        if (Soccer.animation == true) {
+            Soccer.animation = false;
         }
         else {
-            animation = true;
+            Soccer.animation = true;
         }
     }
     function getUserPreferences() {
@@ -122,6 +129,12 @@ var Soccer;
     }
     // AllPlayer
     function createPeopleonField() {
+        // Schiedsrichter und zwei Linienmänner werden kreiert:
+        const referee = new Soccer.Referee(new Soccer.Vector(600, 300));
+        const linesmanTop = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, 15));
+        const linesmanBottom = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, Soccer.crc2.canvas.height - 15));
+        // alle in moveables pushen
+        moveables.push(referee, linesmanTop, linesmanBottom);
         // Spieler:
         for (let i = 0; i < 32; i++) {
             let position = new Soccer.Vector(playerInformation[i].x, playerInformation[i].y); // Position vom playerInformation Array 
@@ -136,26 +149,23 @@ var Soccer;
             else if (team == "B") {
                 color = teamBColor;
             }
-            Soccer.player = new Soccer.Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
+            const player = new Soccer.Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
             // bekommen noch Geschwindigkeit und Präzision
             //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
-            allPlayers.push(Soccer.player);
+            allPlayers.push(player);
             if (jerseyNumber <= 22) {
-                moveables.push(Soccer.player);
+                moveables.push(player);
             }
             else if (jerseyNumber > 22) {
-                sparePlayers.push(Soccer.player);
+                sparePlayers.push(player);
             }
         }
-        // Schiedsrichter und zwei Linienmänner werden kreiert:
-        const referee = new Soccer.Referee(new Soccer.Vector(600, 300));
-        const linesmanTop = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, 15));
-        const linesmanBottom = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, Soccer.crc2.canvas.height - 15));
-        // alle in moveables pushen
-        moveables.push(referee, linesmanTop, linesmanBottom);
     }
     // Ab hier bis Ende shootBall neu:
     function shootBall(_event) {
+        //to be able to check goals, set hitGoalA & hitGoalsB from ball to true
+        Soccer.ball.hitGoalA = false;
+        Soccer.ball.hitGoalB = false;
         //get the position of the click and move the ball to this position
         // Mouseposition:
         let xpos = 0;
@@ -174,16 +184,15 @@ var Soccer;
         if (xpos > 0 && ypos > 0) {
             Soccer.ball.destination = new Soccer.Vector(xpos, ypos);
             Soccer.ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
-        }
-        // Wenn im Ziel A, Counter zählt hoch:
-        if (Soccer.ball.position.x < 100 && Soccer.ball.position.y > 250 && Soccer.ball.position.y < 300) {
-            goalsA += 1;
-        }
-        // Wenn im Ziel B, Counter zählt hoch:
-        if (Soccer.ball.position.x > 900 && Soccer.ball.position.y > 250 && Soccer.ball.position.y < 300) {
-            goalsB += 1;
+            Soccer.animation = true;
         }
         // People rennen hinterher:
+    }
+    function handleLeftGoal() {
+        goalsB++;
+    }
+    function handleRightGoal() {
+        goalsA++;
     }
     function update() {
         // Draw the Playingfield
@@ -205,7 +214,7 @@ var Soccer;
         // Einstellungsformular wird wieder angezeigt
         landingPage.style.display = "";
         //stop animation and reset values to default
-        animation = false;
+        Soccer.animation = false;
         minimumSpeed = 1;
         maximumSpeed = 5;
         minimumPrecision = 1;

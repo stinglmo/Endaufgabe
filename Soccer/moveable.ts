@@ -1,7 +1,7 @@
 namespace Soccer {
     // super class to handle movable objects
     
-    export class Moveable {
+    export abstract class Moveable {
 
         public position: Vector;
         public radius: number;
