@@ -22,7 +22,7 @@ var Soccer;
         SOCCER_EVENT["RIGHTGOAL_HIT"] = "rightGoalHit";
         SOCCER_EVENT["LEFTGOAL_HIT"] = "leftGoalHit";
     })(SOCCER_EVENT = Soccer.SOCCER_EVENT || (Soccer.SOCCER_EVENT = {}));
-    let playerInformation = [
+    Soccer.playerInformation = [
         // Team A
         { x: 135, y: 275, team: "A" },
         { x: 180, y: 100, team: "A" },
@@ -80,6 +80,7 @@ var Soccer;
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
         canvas.addEventListener("click", shootBall);
+        canvas.addEventListener("mouseover", getPlayerInformation);
         Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
         Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
     }
@@ -137,8 +138,8 @@ var Soccer;
         moveables.push(referee, linesmanTop, linesmanBottom);
         // Spieler:
         for (let i = 0; i < 32; i++) {
-            let position = new Soccer.Vector(playerInformation[i].x, playerInformation[i].y); // Position vom playerInformation Array 
-            let team = playerInformation[i].team; // from array;
+            let position = new Soccer.Vector(Soccer.playerInformation[i].x, Soccer.playerInformation[i].y); // Position vom playerInformation Array 
+            let team = Soccer.playerInformation[i].team; // from array;
             let speed = randomBetween(minimumSpeed, maximumSpeed);
             let precision = randomBetween(minimumPrecision, maximumPrecision);
             let jerseyNumber = i + 1;
@@ -209,6 +210,30 @@ var Soccer;
         // Score:
         let scoreDisplay = document.querySelector("div#score");
         scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b>Player No ?"; //add jerseyNumber of player in possesion of the ball 
+    }
+    // Spielerinformation bekommen
+    function getPlayerInformation(_event) {
+        // Aktuelle Mouseposition
+        let clickPosition = new Soccer.Vector(_event.offsetX, _event.offsetY);
+        // getPlayerClick von der aktuellen Klickposition
+        let playerClicked = getPlayerClick(clickPosition);
+        // wenn unter der Mouseposition ein Spieler ist, werden die Informationen angezeigt
+        if (playerClicked) {
+            showPlayerInformation(playerClicked);
+        }
+    }
+    // den geklickten Spieler bekommen
+    function getPlayerClick(_clickPosition) {
+        for (let i = 0; i <= 22; i++) {
+            let player = allPlayers[i]; // first object in allPlayers array
+            return player;
+        }
+        return null; // Rückgabewert null, wenn kein Spieler unter der Mouseposition ist
+    }
+    // Player Display
+    function showPlayerInformation(_playerClicked) {
+        let playerDisplay = document.querySelector("div#playerInformation");
+        playerDisplay.innerHTML = "<b>Number: </b>" + _playerClicked.jerseyNumber + " | <b>Speed: </b> " + _playerClicked.speed + " | <b>Precision: </b>" + _playerClicked.precision;
     }
     function initialisation() {
         // Einstellungsformular wird wieder angezeigt

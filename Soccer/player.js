@@ -80,6 +80,11 @@ var Soccer;
             // this.direction.scale(1 / 50);
             // this.position.add(this.direction);
         }
+        // Wenn Player geklickt wurde:
+        isClicked(_clickPosition) {
+            let difference = new Soccer.Vector(_clickPosition.x - this.position.x, _clickPosition.y - this.position.y);
+            return (difference.length < this.radius);
+        }
     }
     Soccer.Player = Player;
 })(Soccer || (Soccer = {}));

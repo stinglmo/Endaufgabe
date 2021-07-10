@@ -106,5 +106,12 @@ namespace Soccer {
        
         }
 
+        // Wenn Player geklickt wurde:
+        isClicked(_clickPosition: Vector): Boolean {
+            let difference: Vector = new Vector(_clickPosition.x - this.position.x, _clickPosition.y - this.position.y);
+            return(difference.length < this.radius);
+        }
+
+
     }
 }

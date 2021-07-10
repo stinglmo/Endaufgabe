@@ -27,13 +27,13 @@ namespace Soccer {
         LEFTGOAL_HIT = "leftGoalHit"
     }
 
-    interface PlayerInformation {
+    export interface PlayerInformation {
         x: number;
         y: number;
         team: string;
     }
 
-    let playerInformation: PlayerInformation[] = [
+    export let playerInformation: PlayerInformation[] = [
 
         // Team A
         { x: 135, y: 275, team: "A" },
@@ -100,6 +100,7 @@ namespace Soccer {
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
         canvas.addEventListener("click", shootBall);
+        canvas.addEventListener("mouseover", getPlayerInformation);
         crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
         crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
 
@@ -270,6 +271,39 @@ namespace Soccer {
         let scoreDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#score");
         scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b>Player No ?"; //add jerseyNumber of player in possesion of the ball 
     }
+
+    // Spielerinformation bekommen
+    function getPlayerInformation(_event: MouseEvent): void {
+
+        // Aktuelle Mouseposition
+        let clickPosition: Vector = new Vector(_event.offsetX, _event.offsetY);
+
+        // getPlayerClick von der aktuellen Klickposition
+        let playerClicked: Player | null = getPlayerClick(clickPosition);
+
+        // wenn unter der Mouseposition ein Spieler ist, werden die Informationen angezeigt
+        if (playerClicked) {
+            showPlayerInformation(playerClicked);
+        }
+    }
+
+    // den geklickten Spieler bekommen
+    function getPlayerClick (_clickPosition: Vector): Player | null {
+
+        for (let i: number = 0; i <= 22; i++) {
+            let player: Player = allPlayers[i]; // first object in allPlayers array
+            return player;
+        } 
+
+        return null; // Rückgabewert null, wenn kein Spieler unter der Mouseposition ist
+    }
+
+    // Player Display
+    function showPlayerInformation(_playerClicked: Player): void {
+        let playerDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#playerInformation");
+        playerDisplay.innerHTML = "<b>Number: </b>" + _playerClicked.jerseyNumber + " | <b>Speed: </b> " + _playerClicked.speed + " | <b>Precision: </b>" + _playerClicked.precision; 
+    }
+
 
     function initialisation(): void {
         // Einstellungsformular wird wieder angezeigt
