@@ -233,7 +233,7 @@ var Soccer;
     // Player Display
     function showPlayerInformation(_playerClicked) {
         let playerDisplay = document.querySelector("div#playerInformation");
-        playerDisplay.innerHTML = "<b>Number: </b>" + _playerClicked.jerseyNumber + " | <b>Speed: </b> " + _playerClicked.speed + " | <b>Precision: </b>" + _playerClicked.precision;
+        playerDisplay.innerHTML = "<b>Number: </b>" + _playerClicked.jerseyNumber + " | <b>Speed: </b> " + Math.round(_playerClicked.speed) + " | <b>Precision: </b>" + Math.round(_playerClicked.precision);
     }
     function initialisation() {
         // Einstellungsformular wird wieder angezeigt
