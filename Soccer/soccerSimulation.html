@@ -32,7 +32,7 @@
     <div id="simulationContainer">
         <div id="score"></div>
         <canvas width="1000" height="550"></canvas>
-        <div id="playerInformation">Number: <span id="playerNumber"></span> | Speed: <span id="playerSpeed"></span> | Precision: <span id="playerPrecision"></span> | Remove </div>
+        <div id="playerInformation">Number: | Speed: | Precision: </div>
     </div>
 
     <span id="pause"><b>ll</b></span>
@@ -61,17 +61,17 @@
             <fieldset>
                 <legend> <b>Players minimum precision</b> </legend>
                 <label for="minimumprecision"><b>Minimum precision</b></label><br>
-                amateur
-                <input type="range" id="minimumprecision" name="MinimumPrecisionSlider" value="1" min="1" max="3">
                 advanced
+                <input type="range" id="minimumprecision" name="MaximumPrecisionSlider" value="5" min="4" max="6">
+                amateur
             </fieldset>
 
             <fieldset>
                 <legend> <b>Players maximum precision</b> </legend>
                 <label for="minimumprecision"><b>Minimum precision</b></label><br>
-                advanced
-                <input type="range" id="minimumprecision" name="MaximumPrecisionSlider" value="5" min="3" max="5">
                 pro
+                <input type="range" id="minimumprecision" name="MinimumPrecisionSlider" value="1" min="1" max="3">
+                advanced
             </fieldset>
         
             <fieldset>

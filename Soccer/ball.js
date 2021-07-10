@@ -109,7 +109,9 @@ var Soccer;
                 //je weiter die Destination vom Ball weg ist, desto ungenauer ist der Schuss 
                 //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
                 if (this.startMoving == true) { // wenn geklickt wurde
+                    // Präzision abhängig von der Distanz des Klicks zum Ball
                     let distance = (Math.random() - 0.5) * (0.15 * direction.length);
+                    // Präzision abhängig vom Spieler am Ball
                     this.destination.x += distance;
                     this.destination.y += distance; // y
                     this.startMoving = false;
@@ -125,8 +127,8 @@ var Soccer;
                 this.checkGoal();
             }
         }
+        //check, if ball hit goals:
         checkGoal() {
-            //check, if ball hit goals:
             if (this.position.x < 100 && this.position.y > 250 && this.position.y < 300) {
                 if (this.hitGoalA == false) {
                     //create custom event and dispatch it 

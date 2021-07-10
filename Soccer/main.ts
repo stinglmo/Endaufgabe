@@ -22,6 +22,7 @@ namespace Soccer {
     let animationInterval: number;
     export let ball: Ball;
     export let playerAtBall: Player; // für Informationsanzeige
+    export let nobodyIsRunning: Boolean; // handle shootBall
     
     export enum SOCCER_EVENT {
         RIGHTGOAL_HIT = "rightGoalHit", // zum hochzählen
@@ -213,8 +214,9 @@ namespace Soccer {
     function handleCanvasClick(_event: MouseEvent): void {
         if (_event.shiftKey) {
             getPlayerInformation(_event);
-        } else {
+        } else if (nobodyIsRunning == true) { // nur wenn jemand am Ball ist kann man klicken
             shootBall(_event);
+            nobodyIsRunning = false; // damit man währenddessen Spieler rennen nicht klicken kann
         }
     }
 
@@ -246,6 +248,7 @@ namespace Soccer {
         //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
         if (xpos > 0 && ypos > 0) {
             playerAtBall.active = false; //er reagiert für paar Sekunden nicht
+            // playerAtBall.toggleActivation();
             ball.destination = new Vector(xpos, ypos);
             ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
             animation = true;

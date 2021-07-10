@@ -13,7 +13,7 @@ namespace Soccer {
         // public startMoving: boolean = false; // neu dazu
         public perceptionRadius: number = 160;
         startPosition: Vector; // Origin
-        public active: boolean;
+        public active: boolean = true; // damit überhaupt gespielt wird
 
 
         constructor(_position: Vector, _startPosition: Vector, _team: string, _color: string, _speed: number, _precision: number, _jerseyNumber: number) {
@@ -83,8 +83,9 @@ namespace Soccer {
                     //if difference between ball and player is smaller than 25, animation = false
                     //wenn spieler am Ball ankommt, stoppt animation
                     if (distanceToBall > 24 && distanceToBall < 26) {
-                        animation = false;
+                        animation = false; // damit Animation stoppt
                         playerAtBall = this; // Possession
+                        nobodyIsRunning = true; // damit man ab da wiederr klicken kann
                     }
                     
                 } else if (distanceToStartposition > 0) {
@@ -94,7 +95,7 @@ namespace Soccer {
                     this.position.add(vectorToStartposition);
                 }
 
-            }
+            } // this.active zu
                 
 
         

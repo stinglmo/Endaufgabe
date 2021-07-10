@@ -9,6 +9,7 @@ var Soccer;
             this.radius = 15;
             // public startMoving: boolean = false; // neu dazu
             this.perceptionRadius = 160;
+            this.active = true; // damit überhaupt gespielt wird
             this.startPosition = _startPosition; // ist die Position aus seinem Startarray
             this.team = _team;
             this.color = _color;
@@ -60,8 +61,9 @@ var Soccer;
                     //if difference between ball and player is smaller than 25, animation = false
                     //wenn spieler am Ball ankommt, stoppt animation
                     if (distanceToBall > 24 && distanceToBall < 26) {
-                        Soccer.animation = false;
+                        Soccer.animation = false; // damit Animation stoppt
                         Soccer.playerAtBall = this; // Possession
+                        Soccer.nobodyIsRunning = true; // damit man ab da wiederr klicken kann
                     }
                 }
                 else if (distanceToStartposition > 0) {
@@ -70,7 +72,7 @@ var Soccer;
                     vectorToStartposition.scale(scale);
                     this.position.add(vectorToStartposition);
                 }
-            }
+            } // this.active zu
             // Move mit scale checken
             // Speed muss noch überlegen bei Player move 
             // CustomEvent Haupt

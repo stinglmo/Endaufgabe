@@ -167,8 +167,9 @@ var Soccer;
         if (_event.shiftKey) {
             getPlayerInformation(_event);
         }
-        else {
+        else if (Soccer.nobodyIsRunning == true) { // nur wenn jemand am Ball ist kann man klicken
             shootBall(_event);
+            Soccer.nobodyIsRunning = false; // damit man währenddessen Spieler rennen nicht klicken kann
         }
     }
     // Ab hier bis Ende shootBall neu:
@@ -193,6 +194,7 @@ var Soccer;
         //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
         if (xpos > 0 && ypos > 0) {
             Soccer.playerAtBall.active = false; //er reagiert für paar Sekunden nicht
+            // playerAtBall.toggleActivation();
             Soccer.ball.destination = new Soccer.Vector(xpos, ypos);
             Soccer.ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
             Soccer.animation = true;
