@@ -24,10 +24,14 @@ var Soccer;
             //green stripes
             Soccer.crc2.fillStyle = "darkgreen";
             Soccer.crc2.beginPath();
-            Soccer.crc2.fillRect(0, 0, 100, 500);
-            Soccer.crc2.fillRect(200, 0, 100, 500);
-            Soccer.crc2.fillRect(400, 0, 100, 500);
-            Soccer.crc2.fillRect(600, 0, 100, 500);
+            Soccer.crc2.fillRect(0, 0, 50, 500);
+            Soccer.crc2.fillRect(100, 0, 50, 500);
+            Soccer.crc2.fillRect(200, 0, 50, 500);
+            Soccer.crc2.fillRect(300, 0, 50, 500);
+            Soccer.crc2.fillRect(400, 0, 50, 500);
+            Soccer.crc2.fillRect(500, 0, 50, 500);
+            Soccer.crc2.fillRect(600, 0, 50, 500);
+            Soccer.crc2.fillRect(700, 0, 50, 500);
             Soccer.crc2.closePath();
             //Außenlinie
             Soccer.crc2.lineWidth = 2;

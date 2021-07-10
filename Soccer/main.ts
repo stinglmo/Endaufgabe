@@ -21,6 +21,7 @@ namespace Soccer {
     export let animation: boolean = false; // damit im Player drauf zugreifen kann
     let animationInterval: number;
     export let ball: Ball;
+    export let playerAtBall: Player; // für Informationsanzeige
     
     export enum SOCCER_EVENT {
         RIGHTGOAL_HIT = "rightGoalHit", // zum hochzählen
@@ -99,8 +100,8 @@ namespace Soccer {
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
-        canvas.addEventListener("click", shootBall);
-        canvas.addEventListener("mouseover", getPlayerInformation);
+        canvas.addEventListener("click", handleCanvasClick); // checken ob shootBall oder player Information
+        
         crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
         crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
 
@@ -121,11 +122,12 @@ namespace Soccer {
         // Background und Ball werden erstellt:
         field = new Playingfield(); // Background
 
-        ball = new Ball(new Vector(500, 275));
-        moveables.push(ball);
-
         // Alle Menschen:
         createPeopleonField();
+
+        // Ball
+        ball = new Ball(new Vector(500, 275));
+        moveables.push(ball);
 
         //start animation
         animation = true;
@@ -180,6 +182,7 @@ namespace Soccer {
         for (let i: number = 0; i < 32; i++) {
 
             let position: Vector = new Vector(playerInformation[i].x, playerInformation[i].y); // Position vom playerInformation Array 
+            let startPosition: Vector = new Vector(playerInformation[i].x, playerInformation[i].y);
             let team: string = playerInformation[i].team; // from array;
             let speed: number = randomBetween(minimumSpeed, maximumSpeed);
             let precision: number = randomBetween(minimumPrecision, maximumPrecision);
@@ -192,7 +195,7 @@ namespace Soccer {
                 color = teamBColor;
             }
 
-            const player: Player = new Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
+            const player: Player = new Player(position, startPosition, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
             // bekommen noch Geschwindigkeit und Präzision
 
             //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
@@ -205,6 +208,14 @@ namespace Soccer {
 
         }
 
+    }
+
+    function handleCanvasClick(_event: MouseEvent): void {
+        if (_event.shiftKey) {
+            getPlayerInformation(_event);
+        } else {
+            shootBall(_event);
+        }
     }
 
     // Ab hier bis Ende shootBall neu:
@@ -239,9 +250,6 @@ namespace Soccer {
             animation = true;
         }
 
-
-        // People rennen hinterher:
-
     }
 
     function handleLeftGoal(): void {
@@ -269,7 +277,7 @@ namespace Soccer {
 
         // Score:
         let scoreDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#score");
-        scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b>Player No ?"; //add jerseyNumber of player in possesion of the ball 
+        scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b> Player " + playerAtBall.jerseyNumber; //add jerseyNumber of player in possesion of the ball 
     }
 
     // Spielerinformation bekommen
@@ -290,8 +298,8 @@ namespace Soccer {
     // den geklickten Spieler bekommen
     function getPlayerClick (_clickPosition: Vector): Player | null {
 
-        for (let i: number = 0; i <= 22; i++) {
-            let player: Player = allPlayers[i]; // first object in allPlayers array
+        for (let player of allPlayers) {
+            if (player.isClicked(_clickPosition)) // first object in allPlayers array
             return player;
         } 
 

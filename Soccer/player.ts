@@ -15,8 +15,9 @@ namespace Soccer {
         public startPosition: Vector; // Origin
 
 
-        constructor(_position: Vector, _team: string, _color: string, _speed: number, _precision: number, _jerseyNumber: number) {
+        constructor(_position: Vector, _startPosition: Vector, _team: string, _color: string, _speed: number, _precision: number, _jerseyNumber: number) {
             super(_position);
+            this.startPosition = _startPosition;
             this.team = _team;
             this.color = _color;
             this.speed = _speed;
@@ -76,10 +77,11 @@ namespace Soccer {
                 let scale: number = 1 / distanceToBall;
                 vectorToBall.scale(scale);
                 this.position.add(vectorToBall);
+                playerAtBall = this; // Possession
 
                 //if difference between ball and player is smaller than 25, animation = false
                 //wenn spieler am Ball ankommt, stoppt animation
-                if (distanceToBall > 23 && distanceToBall < 26) {
+                if (distanceToBall > 24 && distanceToBall < 26) {
                     animation = false;
                 }
             } else if (distanceToStartposition > 0) {
@@ -90,18 +92,12 @@ namespace Soccer {
             }
 
 
-        // Zurückgehen zur Startposition
+        
         // Move mit scale checken
         // Speed muss noch überlegen bei Player move 
         // CustomEvent Haupt
-        // Ball leichter weg zu bekommen vom Spieler 
-        // Informationen anzeigen lassen vom Player 
-        // Auswechseln 
-        // Spieler Ballbesitz
-
-        // Jede 50fps
-        // this.direction.scale(1 / 50);
-        // this.position.add(this.direction);
+        // Ball leichter weg zu bekommen vom Spieler mit timeout
+        // Auswechseln
 
        
         }

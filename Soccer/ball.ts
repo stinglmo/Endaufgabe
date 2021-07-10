@@ -142,7 +142,7 @@ namespace Soccer {
                 this.position.add(direction);
 
                 // wenn der aus dem Spielfeld rausrollt, wird er automatisch zurück in die Mitte gesetzt:
-                if (this.position.x < 100 || this.position.x > 900 || this.position.y < 25 || this.position.y > 525) {
+                if (this.position.x < 98 || this.position.x > 902 || this.position.y < 25 || this.position.y > 525) {
                     this.position = new Vector(500, 275);
                 }
 

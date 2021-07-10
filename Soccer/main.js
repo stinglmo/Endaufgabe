@@ -79,8 +79,7 @@ var Soccer;
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
-        canvas.addEventListener("click", shootBall);
-        canvas.addEventListener("mouseover", getPlayerInformation);
+        canvas.addEventListener("click", handleCanvasClick); // checken ob shootBall oder player Information
         Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
         Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
     }
@@ -94,10 +93,11 @@ var Soccer;
         getUserPreferences();
         // Background und Ball werden erstellt:
         field = new Soccer.Playingfield(); // Background
-        Soccer.ball = new Soccer.Ball(new Soccer.Vector(500, 275));
-        moveables.push(Soccer.ball);
         // Alle Menschen:
         createPeopleonField();
+        // Ball
+        Soccer.ball = new Soccer.Ball(new Soccer.Vector(500, 275));
+        moveables.push(Soccer.ball);
         //start animation
         Soccer.animation = true;
         animationInterval = window.setInterval(function () {
@@ -139,6 +139,7 @@ var Soccer;
         // Spieler:
         for (let i = 0; i < 32; i++) {
             let position = new Soccer.Vector(Soccer.playerInformation[i].x, Soccer.playerInformation[i].y); // Position vom playerInformation Array 
+            let startPosition = new Soccer.Vector(Soccer.playerInformation[i].x, Soccer.playerInformation[i].y);
             let team = Soccer.playerInformation[i].team; // from array;
             let speed = randomBetween(minimumSpeed, maximumSpeed);
             let precision = randomBetween(minimumPrecision, maximumPrecision);
@@ -150,7 +151,7 @@ var Soccer;
             else if (team == "B") {
                 color = teamBColor;
             }
-            const player = new Soccer.Player(position, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
+            const player = new Soccer.Player(position, startPosition, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
             // bekommen noch Geschwindigkeit und Präzision
             //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
             allPlayers.push(player);
@@ -160,6 +161,14 @@ var Soccer;
             else if (jerseyNumber > 22) {
                 sparePlayers.push(player);
             }
+        }
+    }
+    function handleCanvasClick(_event) {
+        if (_event.shiftKey) {
+            getPlayerInformation(_event);
+        }
+        else {
+            shootBall(_event);
         }
     }
     // Ab hier bis Ende shootBall neu:
@@ -187,7 +196,6 @@ var Soccer;
             Soccer.ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
             Soccer.animation = true;
         }
-        // People rennen hinterher:
     }
     function handleLeftGoal() {
         goalsB++;
@@ -209,7 +217,7 @@ var Soccer;
         }
         // Score:
         let scoreDisplay = document.querySelector("div#score");
-        scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b>Player No ?"; //add jerseyNumber of player in possesion of the ball 
+        scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b> Player " + Soccer.playerAtBall.jerseyNumber; //add jerseyNumber of player in possesion of the ball 
     }
     // Spielerinformation bekommen
     function getPlayerInformation(_event) {
@@ -224,9 +232,9 @@ var Soccer;
     }
     // den geklickten Spieler bekommen
     function getPlayerClick(_clickPosition) {
-        for (let i = 0; i <= 22; i++) {
-            let player = allPlayers[i]; // first object in allPlayers array
-            return player;
+        for (let player of allPlayers) {
+            if (player.isClicked(_clickPosition)) // first object in allPlayers array
+                return player;
         }
         return null; // Rückgabewert null, wenn kein Spieler unter der Mouseposition ist
     }

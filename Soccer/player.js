@@ -3,12 +3,13 @@ var Soccer;
 (function (Soccer) {
     /// Klasse für den Player
     class Player extends Soccer.Moveable {
-        constructor(_position, _team, _color, _speed, _precision, _jerseyNumber) {
+        constructor(_position, _startPosition, _team, _color, _speed, _precision, _jerseyNumber) {
             super(_position);
             // public position: Vector;
             this.radius = 15;
             // public startMoving: boolean = false; // neu dazu
             this.perceptionRadius = 160;
+            this.startPosition = _startPosition;
             this.team = _team;
             this.color = _color;
             this.speed = _speed;
@@ -56,9 +57,10 @@ var Soccer;
                 let scale = 1 / distanceToBall;
                 vectorToBall.scale(scale);
                 this.position.add(vectorToBall);
+                Soccer.playerAtBall = this; // Possession
                 //if difference between ball and player is smaller than 25, animation = false
                 //wenn spieler am Ball ankommt, stoppt animation
-                if (distanceToBall > 23 && distanceToBall < 26) {
+                if (distanceToBall > 24 && distanceToBall < 26) {
                     Soccer.animation = false;
                 }
             }
@@ -68,17 +70,11 @@ var Soccer;
                 vectorToStartposition.scale(scale);
                 this.position.add(vectorToStartposition);
             }
-            // Zurückgehen zur Startposition
             // Move mit scale checken
             // Speed muss noch überlegen bei Player move 
             // CustomEvent Haupt
-            // Ball leichter weg zu bekommen vom Spieler 
-            // Informationen anzeigen lassen vom Player 
-            // Auswechseln 
-            // Spieler Ballbesitz
-            // Jede 50fps
-            // this.direction.scale(1 / 50);
-            // this.position.add(this.direction);
+            // Ball leichter weg zu bekommen vom Spieler mit timeout
+            // Auswechseln
         }
         // Wenn Player geklickt wurde:
         isClicked(_clickPosition) {
