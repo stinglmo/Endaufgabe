@@ -117,9 +117,9 @@ var Soccer;
                 // jede 50fps
                 direction.scale(1 / 50);
                 this.position.add(direction);
-                // wenn aus dem Spielfeld raus:
-                if (Soccer.ball.position.x > 8000) {
-                    Soccer.ball.position = new Soccer.Vector(500, 275);
+                // wenn der aus dem Spielfeld rausrollt, wird er automatisch zurück in die Mitte gesetzt:
+                if (this.position.x < 100 || this.position.x > 900 || this.position.y < 25 || this.position.y > 525) {
+                    this.position = new Soccer.Vector(500, 275);
                 }
                 // CheckGoal
                 this.checkGoal();
@@ -130,7 +130,7 @@ var Soccer;
             if (this.position.x < 100 && this.position.y > 250 && this.position.y < 300) {
                 if (this.hitGoalA == false) {
                     //create custom event and dispatch it 
-                    console.log("Goal for team B");
+                    console.log("Goal for team A");
                     let event = new CustomEvent(Soccer.SOCCER_EVENT.LEFTGOAL_HIT);
                     Soccer.crc2.canvas.dispatchEvent(event);
                     this.hitGoalA = true;
@@ -139,7 +139,7 @@ var Soccer;
             if (this.position.x > 900 && this.position.y > 250 && this.position.y < 300) {
                 if (this.hitGoalB == false) {
                     //create custom event and dispatch it 
-                    console.log("Goal for team A");
+                    console.log("Goal for team B");
                     let event = new CustomEvent(Soccer.SOCCER_EVENT.RIGHTGOAL_HIT);
                     Soccer.crc2.canvas.dispatchEvent(event);
                     this.hitGoalB = true;
