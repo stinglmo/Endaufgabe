@@ -39,12 +39,12 @@ namespace Soccer {
         // Team A
         { x: 135, y: 275, team: "A" },
         { x: 180, y: 100, team: "A" },
-        { x: 180, y: 450, team: "A" },
-        { x: 300, y: 75, team: "A" },
-        { x: 300, y: 225, team: "A" },
+        { x: 820, y: 450, team: "A" },
+        { x: 700, y: 475, team: "A" },
+        { x: 700, y: 325, team: "A" },
         { x: 300, y: 325, team: "A" },
-        { x: 300, y: 475, team: "A" },
-        { x: 400, y: 150, team: "A" },
+        { x: 700, y: 75, team: "A" },
+        { x: 600, y: 150, team: "A" },
         { x: 400, y: 400, team: "A" },
         { x: 450, y: 275, team: "A" },
         { x: 500, y: 75, team: "A" },
@@ -52,14 +52,14 @@ namespace Soccer {
         // Team B
         { x: 500, y: 475, team: "B" },
         { x: 550, y: 275, team: "B" },
-        { x: 600, y: 150, team: "B" },
+        { x: 400, y: 150, team: "B" },
         { x: 600, y: 400, team: "B" },
-        { x: 700, y: 75, team: "B" },
+        { x: 300, y: 475, team: "B" },
         { x: 700, y: 225, team: "B" },
-        { x: 700, y: 325, team: "B" },
-        { x: 700, y: 475, team: "B" },
+        { x: 300, y: 225, team: "B" },
+        { x: 300, y: 75, team: "B" },
         { x: 820, y: 100, team: "B" },
-        { x: 820, y: 450, team: "B" },
+        { x: 180, y: 450, team: "B" },
         { x: 865, y: 275, team: "B" },
 
         // Auswechselspieler Team A
@@ -245,6 +245,7 @@ namespace Soccer {
 
         //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
         if (xpos > 0 && ypos > 0) {
+            playerAtBall.active = false; //er reagiert für paar Sekunden nicht
             ball.destination = new Vector(xpos, ypos);
             ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
             animation = true;

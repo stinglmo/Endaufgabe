@@ -3,6 +3,8 @@ var Soccer;
 (function (Soccer) {
     // super class to handle movable objects
     class Moveable {
+        // public color: string;
+        // public speed: number;
         constructor(_position) {
             this.position = _position;
         }

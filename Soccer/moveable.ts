@@ -5,8 +5,8 @@ namespace Soccer {
 
         public position: Vector;
         public radius: number;
-        public color: string;
-        public speed: number;
+        // public color: string;
+        // public speed: number;
 
         constructor(_position: Vector) {
             this.position = _position;
