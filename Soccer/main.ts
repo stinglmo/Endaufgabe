@@ -18,12 +18,15 @@ namespace Soccer {
     let goalsA: number = 0;
     let goalsB: number = 0;
     let field: Playingfield;
-    export let animation: boolean = false; // damit im Player drauf zugreifen kann
+    let draggedPlayer: Player | undefined;
+    let listenToMouseMove: boolean = false; // Zum Player switchen
+    export let animation: boolean = false; // damit im Player drauf zugreifen kann und um shootBall zu handeln
     let animationInterval: number;
     export let ball: Ball;
     export let playerAtBall: Player; // für Informationsanzeige
-    export let nobodyIsRunning: Boolean; // handle shootBall
-    
+    // export let active: boolean;
+
+
     export enum SOCCER_EVENT {
         RIGHTGOAL_HIT = "rightGoalHit", // zum hochzählen
         LEFTGOAL_HIT = "leftGoalHit"
@@ -101,8 +104,11 @@ namespace Soccer {
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
-        canvas.addEventListener("click", handleCanvasClick); // checken ob shootBall oder player Information
-        
+
+        canvas.addEventListener("mousedown", handleCanvasClick); // checken ob shootBall oder player Information
+        canvas.addEventListener("mousemove", dragPlayer);
+        canvas.addEventListener("mouseup", switchPlayer);
+
         crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
         crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
 
@@ -121,7 +127,7 @@ namespace Soccer {
         getUserPreferences();
 
         // Background und Ball werden erstellt:
-        field = new Playingfield(); // Background
+        field = new Playingfield();
 
         // Alle Menschen:
         createPeopleonField();
@@ -132,9 +138,13 @@ namespace Soccer {
 
         //start animation
         animation = true;
+
+         //update draw methods all the time
+        window.setInterval(drawUpdate, 20); // die ganze Zeit wird gemalt (wichtig für den Playerswitch)
+        //animate only when animation is on
         animationInterval = window.setInterval(function (): void {
-            if (animation == true)
-                update();
+            if (animation == true) // nur wenn sich alles bewegt 
+                animationUpdate();
         },                                     20);
 
     }
@@ -197,7 +207,6 @@ namespace Soccer {
             }
 
             const player: Player = new Player(position, startPosition, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
-            // bekommen noch Geschwindigkeit und Präzision
 
             //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
             allPlayers.push(player);
@@ -212,11 +221,10 @@ namespace Soccer {
     }
 
     function handleCanvasClick(_event: MouseEvent): void {
-        if (_event.shiftKey) {
-            getPlayerInformation(_event);
-        } else if (nobodyIsRunning == true) { // nur wenn jemand am Ball ist kann man klicken
+        if (_event.shiftKey || _event.altKey) {
+            getPlayer(_event); // wird in getPlayer dann unterschieden ob shift oder altkey gedrückt wurde
+        } else if (animation == false) { // nur wenn jemand am Ball ist kann man klicken
             shootBall(_event);
-            nobodyIsRunning = false; // damit man währenddessen Spieler rennen nicht klicken kann
         }
     }
 
@@ -228,7 +236,7 @@ namespace Soccer {
         ball.hitGoalB = false;
 
         //get the position of the click and move the ball to this position
-        
+
         // Mouseposition:
         let xpos: number = 0;
         let ypos: number = 0;
@@ -247,45 +255,26 @@ namespace Soccer {
 
         //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
         if (xpos > 0 && ypos > 0) {
-            playerAtBall.active = false; //er reagiert für paar Sekunden nicht
-            // playerAtBall.toggleActivation();
+
             ball.destination = new Vector(xpos, ypos);
             ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
-            animation = true;
+            animation = true; // auch damit man währenddessen Spieler rennen nicht klicken kann
+
         }
 
     }
 
     function handleLeftGoal(): void {
-        goalsB ++;
+        goalsB++;
     }
 
     function handleRightGoal(): void {
-        goalsA ++;
+        goalsA++;
     }
 
-    function update(): void {
-
-        // Draw the Playingfield
-        field.draw();
-
-        // Update animation
-        for (let moveable of moveables) {
-            moveable.move(); // Player bewegen sich
-            moveable.draw();
-        }
-        // Auswechselspieler
-        for (let sparePlayer of sparePlayers) {
-            sparePlayer.draw();
-        }
-
-        // Score:
-        let scoreDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#score");
-        scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b> Player " + playerAtBall.jerseyNumber; //add jerseyNumber of player in possesion of the ball 
-    }
 
     // Spielerinformation bekommen
-    function getPlayerInformation(_event: MouseEvent): void {
+    function getPlayer(_event: MouseEvent): void {
 
         // Aktuelle Mouseposition
         let clickPosition: Vector = new Vector(_event.offsetX, _event.offsetY);
@@ -295,17 +284,38 @@ namespace Soccer {
 
         // wenn unter der Mouseposition ein Spieler ist, werden die Informationen angezeigt
         if (playerClicked) {
-            showPlayerInformation(playerClicked);
+            if (_event.shiftKey) {
+                showPlayerInformation(playerClicked);
+            } else if (_event.altKey) {
+                listenToMouseMove = true; //soll erst hören wenn altkey gedrückt wird
+                draggedPlayer = playerClicked; // Zuweisung
+            }
+
         }
     }
 
+    function dragPlayer(_event: MouseEvent): void {
+        if (_event.altKey && listenToMouseMove == true) {
+            let mousePosition: Vector = new Vector(_event.offsetX, _event.offsetY);
+            if (draggedPlayer) {
+                draggedPlayer.position = mousePosition; // Damit Spieler an der Maus bleibt
+            }
+        }
+
+    }
+
+    function switchPlayer(_event: MouseEvent): void {
+        //
+        draggedPlayer = undefined; // damit er losgelassen wird
+    }
+
     // den geklickten Spieler bekommen
-    function getPlayerClick (_clickPosition: Vector): Player | null {
+    function getPlayerClick(_clickPosition: Vector): Player | null {
 
         for (let player of allPlayers) {
             if (player.isClicked(_clickPosition)) // first object in allPlayers array
-            return player;
-        } 
+                return player;
+        }
 
         return null; // Rückgabewert null, wenn kein Spieler unter der Mouseposition ist
     }
@@ -313,7 +323,46 @@ namespace Soccer {
     // Player Display
     function showPlayerInformation(_playerClicked: Player): void {
         let playerDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#playerInformation");
-        playerDisplay.innerHTML = "<b>Number: </b>" + _playerClicked.jerseyNumber + " | <b>Speed: </b> " + Math.round(_playerClicked.speed) + " | <b>Precision: </b>" + Math.round(_playerClicked.precision); 
+        playerDisplay.innerHTML = "<b>Number: </b>" + _playerClicked.jerseyNumber + " | <b>Speed: </b> " + Math.round(_playerClicked.speed) + " | <b>Precision: </b>" + Math.round(_playerClicked.precision);
+    }
+
+    function animationUpdate(): void {
+
+        // Update animation
+        for (let moveable of moveables) {
+            moveable.move(); // Player bewegen sich
+
+        }
+
+        // Score:
+        let scoreDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#score");
+        
+        if (playerAtBall) { 
+            scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b> Player " + playerAtBall.jerseyNumber; //add jerseyNumber of player in possesion of the ball 
+        } else {
+            scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b>Player No ?"; 
+        }
+        
+    }
+
+
+    // Seperat damit immer gezeichnet wird, aber nicht immer bewegt wird (weil wenn die Animation stoppt, könnte man sonst nicht draggen)
+    function drawUpdate(): void {
+
+        // Draw the Playingfield
+        field.draw();
+
+        for (let moveable of moveables) {
+            moveable.draw(); // Player werden gemalt
+
+        }
+
+        // Auswechselspieler
+        for (let sparePlayer of sparePlayers) {
+            sparePlayer.draw();
+        }
+
+
     }
 
 
@@ -340,50 +389,6 @@ namespace Soccer {
 
     }
 
-    // function createDraggableElement(): void {
-
-        
-    //     const s: HTMLSpanElement = document.createElement("span");
-
-    //     // enable dragability
-    //     s.setAttribute("draggable", "true");
-
-    //     // rect 1 und rect 2 sind dann die zu tauschenden Canvas
-    //     let buffer_x = rect1.x, buffer_y = rect1.y;
-    //     rect1.reposition(rect2.x,rect2.y);
-    //     rect2.reposition(buffer_x,buffer_y);
-    //     rect1.draw();
-    //     rect2.draw();
-
-    //     // add listener for dragend to swap players
-    //     s.addEventListener("dragend", (e: DragEvent) => {
-    //         // get player directly under the mouse
-    //         const p: Player | undefined = player;
-    //             const v: Vector = new Vector(
-    //                 canvas.position.x + p.this.position.x,
-    //                 canvas.position.y + p.this.position.x
-    //             );
-    //             return distance(v, new Vector(e.clientX, e.clientY)) - player.getRadius() * 2 <= 0;
-    //         });
-
-    //         // if there was a player on dragend swap both
-    //         if (p) {
-    //             // set current active player to inactive
-    //             p.setActive(false);
-    //             player.setActive(true);
-
-    //             // swap subsitutes origin with players origin
-    //             player.setOrigin(new Vector(p.getOrigin().X, p.getOrigin().Y));
-
-    //             // swap subsitutes position with players position
-    //             player.setPosition(new Vector(p.getPosition().X, p.getPosition().Y));
-
-    //             // executes callbacl
-    //             cb();
-    //         }
-
-
-    //     });
 
 
 

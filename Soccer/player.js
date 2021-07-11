@@ -9,7 +9,7 @@ var Soccer;
             this.radius = 15;
             // public startMoving: boolean = false; // neu dazu
             this.perceptionRadius = 160;
-            this.active = true; // damit überhaupt gespielt wird
+            this.active = true; // fürs Timeout wichtig
             this.startPosition = _startPosition; // ist die Position aus seinem Startarray
             this.team = _team;
             this.color = _color;
@@ -40,44 +40,51 @@ var Soccer;
             // crc2.stroke();
             Soccer.crc2.restore();
         }
-        // neu dazu
+        // move
         move() {
-            //move
             //check if ball is in his perception radius (difference between player position and ball position smaller than perception radius)
-            if (this.active == true) { // Alle bis auf den letzten Spieler, der am Ball war (der setzt für paar Sekunden aus)
+            if (this.active == true) {
                 //1. Distanz zum Ball ausrechnen
                 let vectorToBall = new Soccer.Vector(Soccer.ball.position.x - this.position.x, Soccer.ball.position.y - this.position.y); //differenzvektor
                 let distanceToBall = vectorToBall.length; //länge des differenzvektors
                 let vectorToStartposition = new Soccer.Vector(this.startPosition.x - this.position.x, this.startPosition.y - this.position.y); //differenzvektor
                 let distanceToStartposition = vectorToStartposition.length; //länge des differenzvektors
+                // console.log(distanceToStartposition);
                 //2. Checken, ob Distanz kleiner ist als der Wahnehmungsradius des Spielers
-                if (distanceToBall < this.perceptionRadius) {
-                    //move towards ball
+                // --> dann move to ball
+                if (distanceToBall < this.perceptionRadius && distanceToBall > 24) {
                     //gleichmäßig bewegen: wie muss der faktor sein, mit dem direction skaliert wird, damit die länge von direction speed entspricht?
-                    //speed / direction.length = skalierungsfaktor. Speed wäre 1px --> 50px/sekunde
-                    let scale = 1 / distanceToBall;
+                    // Rechnung: speed / direction.length = skalierungsfaktor
+                    let scale = (1 + this.speed * 0.2) / distanceToBall; // Speed is individuell! Speed wäre 1px --> 50px/sekunde 
                     vectorToBall.scale(scale);
                     this.position.add(vectorToBall);
-                    //if difference between ball and player is smaller than 25, animation = false
-                    //wenn spieler am Ball ankommt, stoppt animation
+                    // If difference between ball and player is smaller than 25, animation = false
                     if (distanceToBall > 24 && distanceToBall < 26) {
-                        Soccer.animation = false; // damit Animation stoppt
-                        Soccer.playerAtBall = this; // Possession
-                        Soccer.nobodyIsRunning = true; // damit man ab da wiederr klicken kann
+                        Soccer.animation = false; // damit Animation stoppt und nur dann kann man klicken
+                        Soccer.playerAtBall = this; // Possession 
+                        this.active = false; // damit er dann nicht mehr zum Ball rennen kann
+                        setTimeout(() => {
+                            this.toggleActivity();
+                        }, 3000);
                     }
+                    // Spieler läuft zurück zu seiner Startposition
                 }
-                else if (distanceToStartposition > 0) {
-                    //spieler läuft zurück zu seiner startposition
-                    let scale = 1 / distanceToStartposition;
+                else if (distanceToStartposition > 5) { // 5 damit sie nicht zittern
+                    let scale = (1 + this.speed * 0.2) / distanceToStartposition;
                     vectorToStartposition.scale(scale);
                     this.position.add(vectorToStartposition);
+                    console.log(distanceToStartposition);
                 }
-            } // this.active zu
+            }
+            // enum - zum ball, chillen, zum start
             // Move mit scale checken
-            // Speed muss noch überlegen bei Player move 
             // CustomEvent Haupt
             // Ball leichter weg zu bekommen vom Spieler mit timeout
-            // Auswechseln
+            // Auswechseln mit mouseup and down
+        }
+        // damit er nach 3 Sekunden wieder auf den Ball zugreifen kann!
+        toggleActivity() {
+            this.active = true;
         }
         // Wenn Player geklickt wurde:
         isClicked(_clickPosition) {
