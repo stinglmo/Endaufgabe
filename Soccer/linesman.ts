@@ -10,17 +10,17 @@ namespace Soccer {
         public draw(): void {
             crc2.save();
 
-            // draw player center
+            // Kreis
             crc2.beginPath();
             crc2.arc(this.position.x, this.position.y, this.radius , 0, 2 * Math.PI);
             crc2.closePath();
-            crc2.fillStyle = "#FFFF00"; // gelb
+            crc2.fillStyle = "#FFFF00"; // Gelb
             crc2.fill();
             crc2.lineWidth = 2;
             crc2.strokeStyle = "red";
             crc2.stroke();
 
-            // Mittelpunkt
+            // Punkte
             crc2.beginPath();
             crc2.arc(this.position.x, this.position.y, 2, 0, 2 * Math.PI, false);
             crc2.fillStyle = "red";
@@ -97,8 +97,8 @@ namespace Soccer {
         }
 
         move(): void {
-            // immer auf der Höhe vom Ball
-            this.position.x = ball.position.x;
+            
+            this.position.x = ball.position.x; // Immer auf der Höhe vom Ball
         }
     }
 }

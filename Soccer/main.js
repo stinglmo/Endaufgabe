@@ -5,6 +5,8 @@ var Soccer;
     let startbutton;
     let restartbutton;
     let pausebutton;
+    let instructionbutton;
+    let instructionBoard;
     // Folgenden 6 bekommen Formularwerte
     let minimumSpeed = 1;
     let maximumSpeed = 5;
@@ -17,9 +19,8 @@ var Soccer;
     let field;
     let draggedPlayer;
     let listenToMouseMove = false; // Zum Player switchen
-    Soccer.animation = false; // damit im Player drauf zugreifen kann und um shootBall zu handeln
+    Soccer.animation = false; // Damit im Player drauf zugreifen kann und um shootBall zu handeln
     let animationInterval;
-    // export let active: boolean;
     let SOCCER_EVENT;
     (function (SOCCER_EVENT) {
         SOCCER_EVENT["RIGHTGOAL_HIT"] = "rightGoalHit";
@@ -68,30 +69,45 @@ var Soccer;
     let sparePlayers = [];
     window.addEventListener("load", handleLoad);
     function handleLoad() {
-        // Canvas und rendering context
+        // Canvas und Rendering-Kontext
         let canvas = document.querySelector("canvas");
         if (!canvas)
             return;
         Soccer.crc2 = canvas.getContext("2d");
-        //HTML-Elemente werden herangeholt 
+        // HTML-Elemente werden herangeholt 
         landingPage = document.querySelector("div#settingsContainer");
         startbutton = document.querySelector("div#startbutton");
         restartbutton = document.querySelector("span#restart");
-        pausebutton = document.querySelector("span#pause"); // zum ausprobieren
-        // EventListener werden auf die Button installiert umd von dem Formular zum Spielfeld zu toggeln 
+        pausebutton = document.querySelector("span#pause"); // Zum ausprobieren
+        instructionbutton = document.querySelector("span#instruction");
+        instructionBoard = document.querySelector("#instructionBoard");
+        // EventListener werden auf die Button installiert um von dem Formular zum Spielfeld zu toggeln 
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
         pausebutton.addEventListener("click", pauseSimulation);
-        canvas.addEventListener("mousedown", handleCanvasClick); // checken ob shootBall oder player Information
+        instructionbutton.addEventListener("click", showInstruction); // Spielanleitung
+        canvas.addEventListener("mousedown", handleCanvasClick); // Checken ob shootBall, getPlayer oder showplayerInformation passieren soll
         canvas.addEventListener("mousemove", dragPlayer);
         canvas.addEventListener("mouseup", switchPlayer);
         Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
         Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
     }
+    // Random - Funktion für die random Werte der Geschwinfigkeit und Präzision
     function randomBetween(_min, _max) {
         return _min + Math.random() * (_max - _min);
     }
     Soccer.randomBetween = randomBetween;
+    // Toggle Spielanleitung
+    function showInstruction() {
+        if (instructionBoard.classList.contains("is-hidden")) {
+            instructionBoard.classList.remove("is-hidden");
+            instructionBoard.classList.add("visible");
+        }
+        else if (instructionBoard.classList.contains("visible")) {
+            instructionBoard.classList.remove("visible");
+            instructionBoard.classList.add("is-hidden");
+        }
+    }
     function startSimulation() {
         landingPage.style.display = "none"; // Damit das Formular verschwindet
         // Formularauswertung:
@@ -103,13 +119,11 @@ var Soccer;
         // Ball
         Soccer.ball = new Soccer.Ball(new Soccer.Vector(500, 275));
         moveables.push(Soccer.ball);
-        //start animation
+        // Start animation
         Soccer.animation = true;
-        //update draw methods all the time
-        window.setInterval(drawUpdate, 20); // die ganze Zeit wird gemalt (wichtig für den Playerswitch)
-        //animate only when animation is on
+        window.setInterval(drawUpdate, 20); // Die ganze Zeit wird gemalt (wichtig für den Playerswitch)
         animationInterval = window.setInterval(function () {
-            if (Soccer.animation == true) // nur wenn sich alles bewegt 
+            if (Soccer.animation == true) // Nur wenn animation == true bewegt sich alles
                 animationUpdate();
         }, 20);
     }
@@ -127,13 +141,12 @@ var Soccer;
     }
     function getUserPreferences() {
         // FormData - Objekt um die Werte des Formulars auszuwerten!
-        let formData = new FormData(document.forms[0]); // weist der Variablen formData alle fieldsets zu
-        // console.log(formData);
+        let formData = new FormData(document.forms[0]); // Weist der Variablen formData alle fieldsets zu!
         minimumSpeed = Number(formData.get("MinimumSpeedSlider")); // Ich hole mir mit dem Namen "MinimumSpeedSlider" den value, in Form einer Nummer
         maximumSpeed = Number(formData.get("MaximumSpeedSlider"));
         minimumPrecision = Number(formData.get("MinimumPrecisionSlider"));
         maximumPrecision = Number(formData.get("MaximumPrecisionSlider"));
-        teamAColor = formData.get("TeamAColorPicker"); //wir wissen, dass es ein string ist!
+        teamAColor = formData.get("TeamAColorPicker"); // Wir wissen, dass es ein string ist!
         teamBColor = formData.get("TeamBColorPicker");
     }
     // AllPlayer
@@ -142,24 +155,24 @@ var Soccer;
         const referee = new Soccer.Referee(new Soccer.Vector(600, 300));
         const linesmanTop = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, 15));
         const linesmanBottom = new Soccer.Linesman(new Soccer.Vector(Soccer.crc2.canvas.width / 2, Soccer.crc2.canvas.height - 15));
-        // alle in moveables pushen
+        // Alle in moveables pushen
         moveables.push(referee, linesmanTop, linesmanBottom);
-        // Spieler:
+        // Erstellen der Spieler:
         for (let i = 0; i < 32; i++) {
-            let position = new Soccer.Vector(Soccer.playerInformation[i].x, Soccer.playerInformation[i].y); // Position vom playerInformation Array 
+            let position = new Soccer.Vector(Soccer.playerInformation[i].x, Soccer.playerInformation[i].y); // Position vom Interface - Array 
             let startPosition = new Soccer.Vector(Soccer.playerInformation[i].x, Soccer.playerInformation[i].y);
-            let team = Soccer.playerInformation[i].team; // from array;
+            let team = Soccer.playerInformation[i].team; // von dem Interface - Array 
             let speed = randomBetween(minimumSpeed, maximumSpeed);
             let precision = randomBetween(minimumPrecision, maximumPrecision);
             let jerseyNumber = i + 1;
-            let color = "000000"; //default value just in case
+            let color = "000000"; // Nur für den Fall default value
             if (team == "A") {
                 color = teamAColor;
             }
             else if (team == "B") {
                 color = teamBColor;
             }
-            const player = new Soccer.Player(position, startPosition, team, color, speed, precision, jerseyNumber); // keine Ahnung wie man sie verteilt
+            const player = new Soccer.Player(position, startPosition, team, color, speed, precision, jerseyNumber);
             //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
             allPlayers.push(player);
             if (jerseyNumber <= 22) {
@@ -170,6 +183,7 @@ var Soccer;
             }
         }
     }
+    // Um zu checken ob der Spieler getauscht werden soll, seine Infos angezeigt werden sollen oder der Ball geschossen werden soll:
     function handleCanvasClick(_event) {
         if (_event.shiftKey || _event.altKey) {
             getPlayer(_event); // wird in getPlayer dann unterschieden ob shift oder altkey gedrückt wurde
@@ -178,24 +192,20 @@ var Soccer;
             shootBall(_event);
         }
     }
-    // Ab hier bis Ende shootBall neu:
+    // Ball bewegen
     function shootBall(_event) {
-        //to be able to check goals, set hitGoalA & hitGoalsB from ball to true
+        // Um das Ziel zu checken, bei einem Tor wird hitGoalA bzw. hitGoalsB auf true gesetzt.
         Soccer.ball.hitGoalA = false;
         Soccer.ball.hitGoalB = false;
-        //get the position of the click and move the ball to this position
         // Mouseposition:
         let xpos = 0;
         let ypos = 0;
-        // Eine neue random Position wird kalkuliert, innerhalb des Präzisionsradius vom Spieler
-        // const randomX: number = randomBetween(minimumPrecision, maximumPrecision);
-        // const randomY: number = randomBetween(minimumPrecision, maximumPrecision);
         // Damit man wirklich nur auf dem Fußballfeld klicken kann
         if (_event.offsetX > 75 && _event.offsetX < 925) {
-            xpos = _event.offsetX;
+            xpos = _event.offsetX; // X-Koordinate der Maus
         }
         if (_event.offsetY > 0 && _event.offsetY < 550) {
-            ypos = _event.offsetY;
+            ypos = _event.offsetY; // Y-Koordinate der Maus
         }
         //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
         if (xpos > 0 && ypos > 0) {
@@ -236,7 +246,6 @@ var Soccer;
         }
     }
     function switchPlayer(_event) {
-        //
         draggedPlayer = undefined; // damit er losgelassen wird
     }
     // den geklickten Spieler bekommen

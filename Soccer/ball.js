@@ -6,12 +6,12 @@ var Soccer;
             super(_position);
             this.radius = 10;
             this.startMoving = false;
-            this.hitGoalA = false; // nur dann wird das CustomEvent losgeschickt
+            this.hitGoalA = false; // Nur dann wird das CustomEvent losgeschickt
             this.hitGoalB = false;
         }
         draw() {
             Soccer.crc2.save();
-            // draw player center
+            // Ball
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
             Soccer.crc2.fillStyle = "white";
@@ -106,33 +106,32 @@ var Soccer;
             // Wenn es eine Destination gibt, bewegt sich der Ball dorthin (also nach einem Klick)
             if (this.destination) {
                 let direction = new Soccer.Vector(this.destination.x - this.position.x, this.destination.y - this.position.y);
-                //je weiter die Destination vom Ball weg ist, desto ungenauer ist der Schuss 
-                //je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
+                // Je weiter die Destination vom Ball weg ist, desto ungenauer ist der Schuss 
+                // Je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
                 if (this.startMoving == true) { // wenn geklickt wurde
                     // Präzision abhängig von der Distanz des Klicks zum Ball
                     let distance = (Math.random() - 0.5) * (0.15 * direction.length);
                     // Präzision abhängig vom Spieler am Ball
                     this.destination.x += distance;
-                    this.destination.y += distance; // y
+                    this.destination.y += distance;
                     this.startMoving = false;
                 }
-                // jede 50fps
+                // Jede 50fps
                 direction.scale(1 / 50);
                 this.position.add(direction);
-                // wenn der aus dem Spielfeld rausrollt, wird er automatisch zurück in die Mitte gesetzt:
+                // Wenn der aus dem Spielfeld rausrollt, wird er automatisch zurück in die Mitte gesetzt:
                 if (this.position.x < 98 || this.position.x > 902 || this.position.y < 25 || this.position.y > 525) {
                     this.position = new Soccer.Vector(500, 275);
                 }
-                // CheckGoal
+                // Tor checken
                 this.checkGoal();
             }
         }
-        //check, if ball hit goals:
+        // Tor checken
         checkGoal() {
             if (this.position.x < 100 && this.position.y > 250 && this.position.y < 300) {
                 if (this.hitGoalA == false) {
-                    //create custom event and dispatch it 
-                    console.log("Goal for team A");
+                    // CustomEvent erstellen und losschicken 
                     let event = new CustomEvent(Soccer.SOCCER_EVENT.LEFTGOAL_HIT);
                     Soccer.crc2.canvas.dispatchEvent(event);
                     this.hitGoalA = true;
@@ -140,8 +139,7 @@ var Soccer;
             }
             if (this.position.x > 900 && this.position.y > 250 && this.position.y < 300) {
                 if (this.hitGoalB == false) {
-                    //create custom event and dispatch it 
-                    console.log("Goal for team B");
+                    // CustomEvent erstellen und losschicken
                     let event = new CustomEvent(Soccer.SOCCER_EVENT.RIGHTGOAL_HIT);
                     Soccer.crc2.canvas.dispatchEvent(event);
                     this.hitGoalB = true;

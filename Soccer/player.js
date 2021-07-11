@@ -40,49 +40,45 @@ var Soccer;
             // crc2.stroke();
             Soccer.crc2.restore();
         }
-        // move
         move() {
-            //check if ball is in his perception radius (difference between player position and ball position smaller than perception radius)
             if (this.active == true) {
-                //1. Distanz zum Ball ausrechnen
-                let vectorToBall = new Soccer.Vector(Soccer.ball.position.x - this.position.x, Soccer.ball.position.y - this.position.y); //differenzvektor
-                let distanceToBall = vectorToBall.length; //länge des differenzvektors
-                let vectorToStartposition = new Soccer.Vector(this.startPosition.x - this.position.x, this.startPosition.y - this.position.y); //differenzvektor
-                let distanceToStartposition = vectorToStartposition.length; //länge des differenzvektors
-                // console.log(distanceToStartposition);
-                //2. Checken, ob Distanz kleiner ist als der Wahnehmungsradius des Spielers
+                // 1. Distanz zum Ball ausrechnen
+                let vectorToBall = new Soccer.Vector(Soccer.ball.position.x - this.position.x, Soccer.ball.position.y - this.position.y); // Differenzvektor
+                let distanceToBall = vectorToBall.length; // Länge des differenzvektors
+                let vectorToStartposition = new Soccer.Vector(this.startPosition.x - this.position.x, this.startPosition.y - this.position.y); // Differenzvektor
+                let distanceToStartposition = vectorToStartposition.length; // Länge des Differenzvektors
+                // 2. Checken, ob Distanz kleiner ist als der Wahnehmungsradius des Spielers
                 // --> dann move to ball
                 if (distanceToBall < this.perceptionRadius && distanceToBall > 24) {
-                    //gleichmäßig bewegen: wie muss der faktor sein, mit dem direction skaliert wird, damit die länge von direction speed entspricht?
+                    // Gleichmäßig bewegen: wie muss der faktor sein, mit dem direction skaliert wird, damit die länge von direction speed entspricht?
                     // Rechnung: speed / direction.length = skalierungsfaktor
                     let scale = (1 + this.speed * 0.2) / distanceToBall; // Speed is individuell! Speed wäre 1px --> 50px/sekunde 
                     vectorToBall.scale(scale);
                     this.position.add(vectorToBall);
                     // If difference between ball and player is smaller than 25, animation = false
                     if (distanceToBall > 24 && distanceToBall < 26) {
-                        Soccer.animation = false; // damit Animation stoppt und nur dann kann man klicken
+                        Soccer.animation = false; // Damit Animation stoppt und nur dann kann man klicken
                         Soccer.playerAtBall = this; // Possession 
-                        this.active = false; // damit er dann nicht mehr zum Ball rennen kann
+                        this.active = false; // Damit er dann nicht mehr zum Ball rennen kann
                         setTimeout(() => {
                             this.toggleActivity();
                         }, 3000);
                     }
                     // Spieler läuft zurück zu seiner Startposition
                 }
-                else if (distanceToStartposition > 5) { // 5 damit sie nicht zittern
+                else if (distanceToStartposition > 5) { // 5, damit sie nicht zittern
                     let scale = (1 + this.speed * 0.2) / distanceToStartposition;
                     vectorToStartposition.scale(scale);
                     this.position.add(vectorToStartposition);
-                    console.log(distanceToStartposition);
                 }
             }
+            // Lernen: Enumeration
             // enum - zum ball, chillen, zum start
             // Move mit scale checken
             // CustomEvent Haupt
-            // Ball leichter weg zu bekommen vom Spieler mit timeout
             // Auswechseln mit mouseup and down
         }
-        // damit er nach 3 Sekunden wieder auf den Ball zugreifen kann!
+        // Damit er nach 3 Sekunden wieder auf den Ball zugreifen kann!
         toggleActivity() {
             this.active = true;
         }

@@ -8,16 +8,16 @@ var Soccer;
         }
         draw() {
             Soccer.crc2.save();
-            // draw player center
+            // Kreis
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
             Soccer.crc2.closePath();
-            Soccer.crc2.fillStyle = "#FFFF00"; // gelb
+            Soccer.crc2.fillStyle = "#FFFF00"; // Gelb
             Soccer.crc2.fill();
             Soccer.crc2.lineWidth = 2;
             Soccer.crc2.strokeStyle = "red";
             Soccer.crc2.stroke();
-            // Mittelpunkt
+            // Punkte
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(this.position.x, this.position.y, 2, 0, 2 * Math.PI, false);
             Soccer.crc2.fillStyle = "red";
@@ -84,8 +84,7 @@ var Soccer;
             Soccer.crc2.restore();
         }
         move() {
-            // immer auf der Höhe vom Ball
-            this.position.x = Soccer.ball.position.x;
+            this.position.x = Soccer.ball.position.x; // Immer auf der Höhe vom Ball
         }
     }
     Soccer.Linesman = Linesman;
