@@ -4,7 +4,6 @@ namespace Soccer {
     export abstract class Moveable {
 
         public position: Vector;
-        public radius: number;
 
         constructor(_position: Vector) {
             this.position = _position;

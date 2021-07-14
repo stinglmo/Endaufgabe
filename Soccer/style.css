@@ -74,15 +74,16 @@ span#instruction {
     cursor: pointer;
 }
 
-#instructionBoard {
-    top: 100px;
-    left: 850px;
+span#instructionBoard {
+    top: 13px;
+    right: 100px;
     position: absolute;
     border: solid 1px;
     border-radius: 15px;
     padding: 30px;
     background-color: white;
     text-align: center;
+    box-shadow: 8px 8px 25px #00000060;
 }
 
 .is-hidden {

@@ -66,7 +66,6 @@ var Soccer;
     ];
     let moveables = [];
     let allPlayers = [];
-    let sparePlayers = [];
     window.addEventListener("load", handleLoad);
     function handleLoad() {
         // Canvas und Rendering-Kontext
@@ -173,14 +172,9 @@ var Soccer;
                 color = teamBColor;
             }
             const player = new Soccer.Player(position, startPosition, team, color, speed, precision, jerseyNumber);
-            //Feldspieler in moveables, alle Spieler in allPlayers, Ersatzspieler in sparePlayers
+            //Feldspieler in moveables, alle Spieler in allPlayers
             allPlayers.push(player);
-            if (jerseyNumber <= 22) {
-                moveables.push(player);
-            }
-            else if (jerseyNumber > 22) {
-                sparePlayers.push(player);
-            }
+            moveables.push(player);
         }
     }
     // Um zu checken ob der Spieler getauscht werden soll, seine Infos angezeigt werden sollen oder der Ball geschossen werden soll:
@@ -238,23 +232,43 @@ var Soccer;
         }
     }
     function dragPlayer(_event) {
+        // Bekomme Mausposition die ganze Zeit
         if (_event.altKey && listenToMouseMove == true) {
             let mousePosition = new Soccer.Vector(_event.offsetX, _event.offsetY);
+            // Die Position vom gedraggten Spieler wird an die Mausposition geheftet
             if (draggedPlayer) {
                 draggedPlayer.position = mousePosition; // Damit Spieler an der Maus bleibt
             }
         }
     }
+    // Es wird gecheckt ob der gedraggte Player mit einem anderen Spieler überlappt...
+    // Wenn ja, dann sollen sie ihre Plätze tauschen.
     function switchPlayer(_event) {
-        draggedPlayer = undefined; // damit er losgelassen wird
+        // Aktuelle Mouseposition
+        let mousePosition = new Soccer.Vector(_event.offsetX, _event.offsetY);
+        // getPlayerClick von der aktuellen Mausposition
+        let playerAtMousePosition = getPlayerClick(mousePosition);
+        if (playerAtMousePosition) {
+            if (draggedPlayer) {
+                // save Startposition von dem Spieler der ausgetauscht werden soll
+                let draggedPlayerStartposition = draggedPlayer.startPosition;
+                let playerStartposition = playerAtMousePosition.startPosition;
+                // Ihre Startpositionen vertauschen
+                draggedPlayer.startPosition = playerStartposition;
+                playerAtMousePosition.startPosition = draggedPlayerStartposition;
+                playerAtMousePosition.position = draggedPlayerStartposition;
+                // Die Zuweisung von draggedPlayer entfernen
+                draggedPlayer = undefined;
+            }
+        }
     }
-    // den geklickten Spieler bekommen
+    // Den geklickten Spieler bekommen
     function getPlayerClick(_clickPosition) {
         for (let player of allPlayers) {
-            if (player.isClicked(_clickPosition)) // first object in allPlayers array
+            if (player.isClicked(_clickPosition) && player != draggedPlayer) // Wenn die Person unter der Maus nicht der gedraggte Spieler ist
                 return player;
         }
-        return null; // Rückgabewert null, wenn kein Spieler unter der Mouseposition ist
+        return null; // Rückgabewert null, wenn kein Spieler unter der Mausposition ist
     }
     // Player Display
     function showPlayerInformation(_playerClicked) {
@@ -280,11 +294,11 @@ var Soccer;
         // Draw the Playingfield
         field.draw();
         for (let moveable of moveables) {
-            moveable.draw(); // Player werden gemalt
+            moveable.draw(); // Player (auch Auswechselspieler) werden gemalt
         }
-        // Auswechselspieler
-        for (let sparePlayer of sparePlayers) {
-            sparePlayer.draw();
+        // Status der Player wird gecheckt (damit die Auswechselspieler nicht mitspielen)
+        for (let player of allPlayers) {
+            player.checkState();
         }
     }
     function initialisation() {
@@ -301,7 +315,6 @@ var Soccer;
         //empty arrays of current objects in the simulation
         moveables = [];
         allPlayers = [];
-        sparePlayers = [];
         // Animationsintervall beenden
         window.clearInterval(animationInterval);
     }
