@@ -3,11 +3,11 @@ namespace Soccer {
 
     export class Ball extends Moveable {
 
-        public radius: number = 10;
         public destination: Vector; // Position des Klicks, wo der Ball dann hinrollen soll 
         public startMoving: boolean = false;
         public hitGoalA: boolean = false; // Nur dann wird das CustomEvent losgeschickt
         public hitGoalB: boolean = false;
+        private radius: number = 10;
 
         constructor(_position: Vector) {
             super(_position);
@@ -122,18 +122,22 @@ namespace Soccer {
         }
 
 
-        move(): void {
+        public move(): void {
 
             // Wenn es eine Destination gibt, bewegt sich der Ball dorthin (also nach einem Klick)
             if (this.destination) {
                 let direction: Vector = new Vector(this.destination.x - this.position.x, this.destination.y - this.position.y);
-
+                let distance: number = 0;
                 // Je weiter die Destination vom Ball weg ist, desto ungenauer ist der Schuss 
                 // Je größer die Distanz zwischen ball und klick, desto größer ist der radius um den klickpunkt, aus dem eine zufällige Zielposition gewählt wird
                 if (this.startMoving == true) { // wenn geklickt wurde
 
                     // Präzision abhängig von der Distanz des Klicks zum Ball
-                    let distance: number = (Math.random() - 0.5) * (0.15 * direction.length);
+                    distance += (Math.random() - 0.5) * (0.25 * direction.length);
+
+                    // Präzision abhängig vom Spieler am Ball
+                    if (playerAtBall)
+                        distance = (playerAtBall.precision / 2) * (0.1 * direction.length);
 
                     // Präzision abhängig vom Spieler am Ball
                     this.destination.x += distance;
@@ -143,7 +147,13 @@ namespace Soccer {
 
                 // Jede 50fps
                 direction.scale(1 / 50);
-                this.position.add(direction);
+
+                // Der Ball bewegt sich bei sehr niedriger Distanz schneller
+                if (distance < 150) {
+                    this.position.add(new Vector(direction.x * 2, direction.y * 2));
+                } else {
+                    this.position.add(direction);
+                }
 
                 // Wenn der aus dem Spielfeld rausrollt, wird er automatisch zurück in die Mitte gesetzt:
                 if (this.position.x < 98 || this.position.x > 902 || this.position.y < 25 || this.position.y > 525) {
@@ -157,9 +167,9 @@ namespace Soccer {
 
         
         // Tor checken
-        checkGoal(): void {
+        private checkGoal(): void {
 
-            if (this.position.x < 100 && this.position.y > 250 && this.position.y < 300) {
+            if (this.position.x < 100 && this.position.y > 225 && this.position.y < 325) {
                 if (this.hitGoalA == false) {
 
                     // CustomEvent erstellen und losschicken 
@@ -168,7 +178,7 @@ namespace Soccer {
                     this.hitGoalA = true;
                 }
             }
-            if (this.position.x > 900 && this.position.y > 250 && this.position.y < 300) {
+            if (this.position.x > 900 && this.position.y > 225 && this.position.y < 325) {
                 if (this.hitGoalB == false) {
 
                     // CustomEvent erstellen und losschicken

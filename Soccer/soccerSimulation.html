@@ -35,12 +35,13 @@
         <div id="playerInformation">Number: | Speed: | Precision: </div>
     </div>
 
-    <span id="pause"><b>ll</b></span>
     <span id="restart"><b>↺</b></span>
-    <span id="instructionBoard" class="is-hidden"> <strong><u>Game Instructions:</u></strong> <br><br>
-        - Click on playingfield to move the ball <br>
-        - Hold shiftkey and click on a player to get the playerInformation <br>
-        - Hold altkey and drag a spareplayer to the playingfield
+    <span id="instructionBoard" class="is-hidden"> <strong><u>Game Instructions:</u></strong> 
+        <ul>
+        <li><b>Shoot ball:</b> Click on the playingfield</li>
+        <li><b>See player details:</b> Hold "shift" and click on a player</li>
+        <li><b>Exchange player:</b> Hold "alt" and drag a spare player over a field player</li>
+        </ul>
     </span>
     <span id="instruction">?</span>
 
@@ -59,7 +60,7 @@
             <fieldset>
                 <legend> <b>Players maximum speed</b> </legend>
                 medium
-                <input type="range" id="maximumspeed" name="MaximumSpeedSlider" value="5" min="3" max="5">
+                <input type="range" id="maximumspeed" name="MaximumSpeedSlider" value="5" min="4" max="6">
                 fast
                 <br>
             </fieldset>
@@ -68,7 +69,7 @@
                 <legend> <b>Players minimum precision</b> </legend>
                 <label for="minimumprecision"><b>Minimum precision</b></label><br>
                 advanced
-                <input type="range" id="minimumprecision" name="MaximumPrecisionSlider" value="5" min="4" max="6">
+                <input type="range" id="minimumprecision" name="MaximumPrecisionSlider" value="5" min="3" max="5">
                 amateur
             </fieldset>
 
@@ -76,7 +77,7 @@
                 <legend> <b>Players maximum precision</b> </legend>
                 <label for="minimumprecision"><b>Minimum precision</b></label><br>
                 pro
-                <input type="range" id="minimumprecision" name="MinimumPrecisionSlider" value="1" min="1" max="3">
+                <input type="range" id="minimumprecision" name="MinimumPrecisionSlider" value="1" min="0" max="2">
                 advanced
             </fieldset>
         

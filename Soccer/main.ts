@@ -1,14 +1,20 @@
-
 namespace Soccer {
 
     export let crc2: CanvasRenderingContext2D;
+    export let ball: Ball;
+    export let playerAtBall: Player | null; // Für Informationsanzeige
+    export let animation: boolean = false; // Damit im Player drauf zugreifen kann und um shootBall zu handeln
+
     let landingPage: HTMLDivElement;
     let startbutton: HTMLDivElement;
     let restartbutton: HTMLSpanElement;
-    let pausebutton: HTMLSpanElement;
     let instructionbutton: HTMLSpanElement;
     let instructionBoard: HTMLSpanElement;
+    let playerDisplay: HTMLDivElement; 
+    let scoreDisplay: HTMLDivElement;
 
+    let goalsA: number = 0;
+    let goalsB: number = 0;
     // Folgenden 6 bekommen Formularwerte
     let minimumSpeed: number = 1;
     let maximumSpeed: number = 5;
@@ -16,17 +22,15 @@ namespace Soccer {
     let maximumPrecision: number = 5;
     let teamAColor: string = "66b2ff";
     let teamBColor: string = "ff3333";
-
-    let goalsA: number = 0;
-    let goalsB: number = 0;
     let field: Playingfield;
+    let animationInterval: number;
     let draggedPlayer: Player | undefined;
     let listenToMouseMove: boolean = false; // Zum Player switchen
-    export let animation: boolean = false; // Damit im Player drauf zugreifen kann und um shootBall zu handeln
-    let animationInterval: number;
-    export let ball: Ball;
-    export let playerAtBall: Player | null; // Für Informationsanzeige
 
+    // Sounds für Anpfiff und Tor
+    const sound: HTMLAudioElement[] = [];
+    sound[0] = new Audio("anpfiff.mp3");
+    sound[1] = new Audio("jubeln.mp3");
 
     export enum SOCCER_EVENT {
         RIGHTGOAL_HIT = "rightGoalHit", // Zum hochzählen
@@ -99,14 +103,14 @@ namespace Soccer {
         landingPage = <HTMLDivElement>document.querySelector("div#settingsContainer");
         startbutton = <HTMLDivElement>document.querySelector("div#startbutton");
         restartbutton = <HTMLSpanElement>document.querySelector("span#restart");
-        pausebutton = <HTMLSpanElement>document.querySelector("span#pause"); // Zum ausprobieren
         instructionbutton = <HTMLSpanElement>document.querySelector("span#instruction");
         instructionBoard = <HTMLSpanElement>document.querySelector("#instructionBoard");
+        playerDisplay = <HTMLDivElement>document.querySelector("div#playerInformation");
+        scoreDisplay = <HTMLDivElement>document.querySelector("div#score");
 
         // EventListener werden auf die Button installiert um von dem Formular zum Spielfeld zu toggeln 
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
-        pausebutton.addEventListener("click", pauseSimulation);
         instructionbutton.addEventListener("click", showInstruction); // Spielanleitung
 
         canvas.addEventListener("mousedown", handleCanvasClick); // Checken ob shootBall, getPlayer oder showplayerInformation passieren soll
@@ -123,23 +127,17 @@ namespace Soccer {
         return _min + Math.random() * (_max - _min);
     }
 
-    // Toggle Spielanleitung
-    function showInstruction(): void {
-
-        if (instructionBoard.classList.contains("is-hidden")) {
-            instructionBoard.classList.remove("is-hidden");
-            instructionBoard.classList.add("visible");
-        } else if (instructionBoard.classList.contains("visible")) {
-            instructionBoard.classList.remove("visible");
-            instructionBoard.classList.add("is-hidden");
-        }
-
+    // Funktion zum Spielen der Sounds
+    function playSample(_sound: number): void {
+        sound[_sound].play();
     }
-
 
     function startSimulation(): void {
 
         landingPage.style.display = "none"; // Damit das Formular verschwindet
+
+        // Anpfiff - Sound
+        playSample(0);
 
         // Formularauswertung:
         getUserPreferences();
@@ -167,18 +165,38 @@ namespace Soccer {
     }
 
     function restartSimulation(): void {
-        //extra function in case we need the initialisation somewhere else
-        initialisation();
+        // Einstellungsformular wird wieder angezeigt
+        landingPage.style.display = "";
+
+        // Animation stoppen und Werte zurücksetzen (default) 
+        animation = false;
+        minimumSpeed = 1;
+        maximumSpeed = 5;
+        minimumPrecision = 1;
+        maximumPrecision = 5;
+        teamAColor = "66b2ff";
+        teamBColor = "ff3333";
+
+        // Leeres Array für die aktuellen Objekte in der Simulation 
+        moveables = [];
+        allPlayers = [];
+
+        // Animationsintervall beenden
+        window.clearInterval(animationInterval);
     }
 
-    function pauseSimulation(): void {
-        if (animation == true) {
-            animation = false;
-        } else {
-            animation = true;
+    // Toggle Spielanleitung
+    function showInstruction(): void {
+
+        if (instructionBoard.classList.contains("is-hidden")) {
+            instructionBoard.classList.remove("is-hidden");
+            instructionBoard.classList.add("visible");
+        } else if (instructionBoard.classList.contains("visible")) {
+            instructionBoard.classList.remove("visible");
+            instructionBoard.classList.add("is-hidden");
         }
-    }
 
+    }
 
     function getUserPreferences(): void {
 
@@ -272,10 +290,12 @@ namespace Soccer {
 
     function handleLeftGoal(): void {
         goalsB++;
+        playSample(1); // Jubeln
     }
 
     function handleRightGoal(): void {
         goalsA++;
+        playSample(1); // Jubeln
     }
 
 
@@ -286,7 +306,7 @@ namespace Soccer {
         let clickPosition: Vector = new Vector(_event.offsetX, _event.offsetY);
 
         // getPlayerClick von der aktuellen Klickposition
-        let playerClicked: Player | null = getPlayerClick(clickPosition);
+        let playerClicked: Player | null = getPlayerAtMousePosition(clickPosition);
 
         // wenn unter der Mouseposition ein Spieler ist, werden die Informationen angezeigt
         if (playerClicked) {
@@ -317,14 +337,16 @@ namespace Soccer {
     // Wenn ja, dann sollen sie ihre Plätze tauschen.
     function switchPlayer(_event: MouseEvent): void {
 
-        // Aktuelle Mouseposition
+        // Aktuelle Mausposition
         let mousePosition: Vector = new Vector(_event.offsetX, _event.offsetY);
         
         // getPlayerClick von der aktuellen Mausposition
-        let playerAtMousePosition: Player | null = getPlayerClick(mousePosition);
-        if (playerAtMousePosition) {
+        let playerAtMousePosition: Player | null = getPlayerAtMousePosition(mousePosition);
+        
+        if (playerAtMousePosition && draggedPlayer) {
 
-            if (draggedPlayer) {
+            // Nur switchen, wenn es das gleiche Team ist
+            if (draggedPlayer.team == playerAtMousePosition.team) {
                 // save Startposition von dem Spieler der ausgetauscht werden soll
                 let draggedPlayerStartposition: Vector = draggedPlayer.startPosition;
                 let playerStartposition: Vector = playerAtMousePosition.startPosition;
@@ -336,12 +358,16 @@ namespace Soccer {
 
                 // Die Zuweisung von draggedPlayer entfernen
                 draggedPlayer = undefined;
+            
+            } else { // Ansonsten passiert nichts
+                draggedPlayer.position = draggedPlayer.startPosition;
+                draggedPlayer = undefined;
             }
         }
     }
 
     // Den geklickten Spieler bekommen
-    function getPlayerClick(_clickPosition: Vector): Player | null {
+    function getPlayerAtMousePosition(_clickPosition: Vector): Player | null {
 
         for (let player of allPlayers) {
             if (player.isClicked(_clickPosition) && player != draggedPlayer) // Wenn die Person unter der Maus nicht der gedraggte Spieler ist
@@ -353,7 +379,7 @@ namespace Soccer {
 
     // Player Display
     function showPlayerInformation(_playerClicked: Player): void {
-        let playerDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#playerInformation");
+        
         playerDisplay.innerHTML = "<b>Number: </b>" + _playerClicked.jerseyNumber + " | <b>Speed: </b> " + Math.round(_playerClicked.speed) + " | <b>Precision: </b>" + Math.round(_playerClicked.precision);
     }
 
@@ -365,9 +391,7 @@ namespace Soccer {
 
         }
 
-        // Score:
-        let scoreDisplay: HTMLDivElement = <HTMLDivElement>document.querySelector("div#score");
-
+        // Score Display:
         if (playerAtBall) {
             scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b> Player " + playerAtBall.jerseyNumber; //add jerseyNumber of player in possesion of the ball 
         } else {
@@ -384,42 +408,18 @@ namespace Soccer {
         field.draw();
 
         for (let moveable of moveables) {
+
             moveable.draw(); // Player (auch Auswechselspieler) werden gemalt
 
         }
 
         // Status der Player wird gecheckt (damit die Auswechselspieler nicht mitspielen)
         for (let player of allPlayers) {
+
             player.checkState();
         }
 
 
     }
-
-
-    function initialisation(): void {
-        // Einstellungsformular wird wieder angezeigt
-        landingPage.style.display = "";
-
-        //stop animation and reset values to default
-        animation = false;
-        minimumSpeed = 1;
-        maximumSpeed = 5;
-        minimumPrecision = 1;
-        maximumPrecision = 5;
-        teamAColor = "66b2ff";
-        teamBColor = "ff3333";
-
-        //empty arrays of current objects in the simulation
-        moveables = [];
-        allPlayers = [];
-
-        // Animationsintervall beenden
-        window.clearInterval(animationInterval);
-
-    }
-
-
-
 
 } // close namespace

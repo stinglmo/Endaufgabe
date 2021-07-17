@@ -3,6 +3,7 @@ namespace Soccer {
     /// Klasse für den Player
     export class Player extends Moveable {
 
+        public team: string;
         public startPosition: Vector; // Origin
         public speed: number;
         public precision: number;
@@ -18,6 +19,7 @@ namespace Soccer {
         constructor(_position: Vector, _startPosition: Vector, _team: string, _color: string, _speed: number, _precision: number, _jerseyNumber: number) {
             super(_position);
             this.startPosition = _startPosition; // ist die Position aus seinem Startarray
+            this.team = _team;
             this.color = _color;
             this.speed = _speed;
             this.precision = _precision;
@@ -81,7 +83,7 @@ namespace Soccer {
                             playerAtBall = this; // Possession 
                             this.active = false; // Damit er dann nicht mehr zum Ball rennen kann
                             setTimeout(() => {
-                                this.toggleActivity();
+                                this.activate();
                             },         2000);
 
                         }
@@ -104,15 +106,16 @@ namespace Soccer {
 
                 // CustomEvent Haupt
 
-                // Auswechseln mit mouseup and down
 
             } // Close erste Bedingung
 
-        }
+        } // close move
 
-        // Damit er nach 3 Sekunden wieder auf den Ball zugreifen kann!
-        toggleActivity(): void {
-            this.active = true;
+
+        // Wenn Player geklickt wurde:
+        public isClicked(_clickPosition: Vector): Boolean {
+            let difference: Vector = new Vector(_clickPosition.x - this.position.x, _clickPosition.y - this.position.y);
+            return (difference.length < this.radius);
         }
 
         // Status checken um zu schauen, ob man die Spieler wie Spieler oder Auswechselspieler "behandelt"
@@ -126,10 +129,9 @@ namespace Soccer {
             }
         }
 
-        // Wenn Player geklickt wurde:
-        isClicked(_clickPosition: Vector): Boolean {
-            let difference: Vector = new Vector(_clickPosition.x - this.position.x, _clickPosition.y - this.position.y);
-            return (difference.length < this.radius);
+        // Damit er nach 3 Sekunden wieder auf den Ball zugreifen kann!
+        private activate(): void {
+            this.active = true;
         }
 
     }

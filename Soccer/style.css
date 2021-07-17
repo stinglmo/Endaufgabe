@@ -67,22 +67,21 @@ span#pause {
 
 span#instruction {
     font-size: 36px;
-    font-weight: bolder; 
     position: absolute;
     top: 13px;
-    right: 110px;
+    right: 80px;
     cursor: pointer;
 }
 
 span#instructionBoard {
     top: 13px;
-    right: 100px;
+    right: 65px;
     position: absolute;
     border: solid 1px;
     border-radius: 15px;
     padding: 30px;
     background-color: white;
-    text-align: center;
+    text-align: left;
     box-shadow: 8px 8px 25px #00000060;
 }
 

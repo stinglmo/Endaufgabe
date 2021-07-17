@@ -9,6 +9,7 @@ var Soccer;
             this.perceptionRadius = 160;
             this.active = true; // fürs Timeout wichtig
             this.startPosition = _startPosition; // ist die Position aus seinem Startarray
+            this.team = _team;
             this.color = _color;
             this.speed = _speed;
             this.precision = _precision;
@@ -59,7 +60,7 @@ var Soccer;
                             Soccer.playerAtBall = this; // Possession 
                             this.active = false; // Damit er dann nicht mehr zum Ball rennen kann
                             setTimeout(() => {
-                                this.toggleActivity();
+                                this.activate();
                             }, 2000);
                         }
                         // Spieler läuft zurück zu seiner Startposition
@@ -73,12 +74,12 @@ var Soccer;
                 // Lernen: Enumeration
                 // enum - zum ball, chillen, zum start
                 // CustomEvent Haupt
-                // Auswechseln mit mouseup and down
             } // Close erste Bedingung
-        }
-        // Damit er nach 3 Sekunden wieder auf den Ball zugreifen kann!
-        toggleActivity() {
-            this.active = true;
+        } // close move
+        // Wenn Player geklickt wurde:
+        isClicked(_clickPosition) {
+            let difference = new Soccer.Vector(_clickPosition.x - this.position.x, _clickPosition.y - this.position.y);
+            return (difference.length < this.radius);
         }
         // Status checken um zu schauen, ob man die Spieler wie Spieler oder Auswechselspieler "behandelt"
         checkState() {
@@ -92,10 +93,9 @@ var Soccer;
                 this.perceptionRadius = 160;
             }
         }
-        // Wenn Player geklickt wurde:
-        isClicked(_clickPosition) {
-            let difference = new Soccer.Vector(_clickPosition.x - this.position.x, _clickPosition.y - this.position.y);
-            return (difference.length < this.radius);
+        // Damit er nach 3 Sekunden wieder auf den Ball zugreifen kann!
+        activate() {
+            this.active = true;
         }
     }
     Soccer.Player = Player;

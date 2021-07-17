@@ -68,8 +68,8 @@ var Soccer;
             Soccer.crc2.closePath();
             // Tor links
             Soccer.crc2.beginPath();
-            Soccer.crc2.moveTo(1, (500 / 2) - 25);
-            Soccer.crc2.lineTo(1, (500 / 2) + 25);
+            Soccer.crc2.moveTo(1, (500 / 2) - 50);
+            Soccer.crc2.lineTo(1, (500 / 2) + 50);
             Soccer.crc2.lineWidth = 9;
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();
@@ -96,8 +96,8 @@ var Soccer;
             Soccer.crc2.closePath();
             // Tor rechts 
             Soccer.crc2.beginPath();
-            Soccer.crc2.moveTo(800 - 1, (500 / 2) - 25);
-            Soccer.crc2.lineTo(800 - 1, (500 / 2) + 25);
+            Soccer.crc2.moveTo(800 - 1, (500 / 2) - 50);
+            Soccer.crc2.lineTo(800 - 1, (500 / 2) + 50);
             Soccer.crc2.lineWidth = 9;
             Soccer.crc2.stroke();
             Soccer.crc2.closePath();

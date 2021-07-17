@@ -1,12 +1,16 @@
 "use strict";
 var Soccer;
 (function (Soccer) {
+    Soccer.animation = false; // Damit im Player drauf zugreifen kann und um shootBall zu handeln
     let landingPage;
     let startbutton;
     let restartbutton;
-    let pausebutton;
     let instructionbutton;
     let instructionBoard;
+    let playerDisplay;
+    let scoreDisplay;
+    let goalsA = 0;
+    let goalsB = 0;
     // Folgenden 6 bekommen Formularwerte
     let minimumSpeed = 1;
     let maximumSpeed = 5;
@@ -14,13 +18,14 @@ var Soccer;
     let maximumPrecision = 5;
     let teamAColor = "66b2ff";
     let teamBColor = "ff3333";
-    let goalsA = 0;
-    let goalsB = 0;
     let field;
+    let animationInterval;
     let draggedPlayer;
     let listenToMouseMove = false; // Zum Player switchen
-    Soccer.animation = false; // Damit im Player drauf zugreifen kann und um shootBall zu handeln
-    let animationInterval;
+    // Sounds für Anpfiff und Tor
+    const sound = [];
+    sound[0] = new Audio("anpfiff.mp3");
+    sound[1] = new Audio("jubeln.mp3");
     let SOCCER_EVENT;
     (function (SOCCER_EVENT) {
         SOCCER_EVENT["RIGHTGOAL_HIT"] = "rightGoalHit";
@@ -77,13 +82,13 @@ var Soccer;
         landingPage = document.querySelector("div#settingsContainer");
         startbutton = document.querySelector("div#startbutton");
         restartbutton = document.querySelector("span#restart");
-        pausebutton = document.querySelector("span#pause"); // Zum ausprobieren
         instructionbutton = document.querySelector("span#instruction");
         instructionBoard = document.querySelector("#instructionBoard");
+        playerDisplay = document.querySelector("div#playerInformation");
+        scoreDisplay = document.querySelector("div#score");
         // EventListener werden auf die Button installiert um von dem Formular zum Spielfeld zu toggeln 
         startbutton.addEventListener("click", startSimulation);
         restartbutton.addEventListener("click", restartSimulation);
-        pausebutton.addEventListener("click", pauseSimulation);
         instructionbutton.addEventListener("click", showInstruction); // Spielanleitung
         canvas.addEventListener("mousedown", handleCanvasClick); // Checken ob shootBall, getPlayer oder showplayerInformation passieren soll
         canvas.addEventListener("mousemove", dragPlayer);
@@ -96,19 +101,14 @@ var Soccer;
         return _min + Math.random() * (_max - _min);
     }
     Soccer.randomBetween = randomBetween;
-    // Toggle Spielanleitung
-    function showInstruction() {
-        if (instructionBoard.classList.contains("is-hidden")) {
-            instructionBoard.classList.remove("is-hidden");
-            instructionBoard.classList.add("visible");
-        }
-        else if (instructionBoard.classList.contains("visible")) {
-            instructionBoard.classList.remove("visible");
-            instructionBoard.classList.add("is-hidden");
-        }
+    // Funktion zum Spielen der Sounds
+    function playSample(_sound) {
+        sound[_sound].play();
     }
     function startSimulation() {
         landingPage.style.display = "none"; // Damit das Formular verschwindet
+        // Anpfiff - Sound
+        playSample(0);
         // Formularauswertung:
         getUserPreferences();
         // Background und Ball werden erstellt:
@@ -127,15 +127,31 @@ var Soccer;
         }, 20);
     }
     function restartSimulation() {
-        //extra function in case we need the initialisation somewhere else
-        initialisation();
+        // Einstellungsformular wird wieder angezeigt
+        landingPage.style.display = "";
+        // Animation stoppen und Werte zurücksetzen (default) 
+        Soccer.animation = false;
+        minimumSpeed = 1;
+        maximumSpeed = 5;
+        minimumPrecision = 1;
+        maximumPrecision = 5;
+        teamAColor = "66b2ff";
+        teamBColor = "ff3333";
+        // Leeres Array für die aktuellen Objekte in der Simulation 
+        moveables = [];
+        allPlayers = [];
+        // Animationsintervall beenden
+        window.clearInterval(animationInterval);
     }
-    function pauseSimulation() {
-        if (Soccer.animation == true) {
-            Soccer.animation = false;
+    // Toggle Spielanleitung
+    function showInstruction() {
+        if (instructionBoard.classList.contains("is-hidden")) {
+            instructionBoard.classList.remove("is-hidden");
+            instructionBoard.classList.add("visible");
         }
-        else {
-            Soccer.animation = true;
+        else if (instructionBoard.classList.contains("visible")) {
+            instructionBoard.classList.remove("visible");
+            instructionBoard.classList.add("is-hidden");
         }
     }
     function getUserPreferences() {
@@ -210,16 +226,18 @@ var Soccer;
     }
     function handleLeftGoal() {
         goalsB++;
+        playSample(1); // Jubeln
     }
     function handleRightGoal() {
         goalsA++;
+        playSample(1); // Jubeln
     }
     // Spielerinformation bekommen
     function getPlayer(_event) {
         // Aktuelle Mouseposition
         let clickPosition = new Soccer.Vector(_event.offsetX, _event.offsetY);
         // getPlayerClick von der aktuellen Klickposition
-        let playerClicked = getPlayerClick(clickPosition);
+        let playerClicked = getPlayerAtMousePosition(clickPosition);
         // wenn unter der Mouseposition ein Spieler ist, werden die Informationen angezeigt
         if (playerClicked) {
             if (_event.shiftKey) {
@@ -244,12 +262,13 @@ var Soccer;
     // Es wird gecheckt ob der gedraggte Player mit einem anderen Spieler überlappt...
     // Wenn ja, dann sollen sie ihre Plätze tauschen.
     function switchPlayer(_event) {
-        // Aktuelle Mouseposition
+        // Aktuelle Mausposition
         let mousePosition = new Soccer.Vector(_event.offsetX, _event.offsetY);
         // getPlayerClick von der aktuellen Mausposition
-        let playerAtMousePosition = getPlayerClick(mousePosition);
-        if (playerAtMousePosition) {
-            if (draggedPlayer) {
+        let playerAtMousePosition = getPlayerAtMousePosition(mousePosition);
+        if (playerAtMousePosition && draggedPlayer) {
+            // Nur switchen, wenn es das gleiche Team ist
+            if (draggedPlayer.team == playerAtMousePosition.team) {
                 // save Startposition von dem Spieler der ausgetauscht werden soll
                 let draggedPlayerStartposition = draggedPlayer.startPosition;
                 let playerStartposition = playerAtMousePosition.startPosition;
@@ -260,10 +279,14 @@ var Soccer;
                 // Die Zuweisung von draggedPlayer entfernen
                 draggedPlayer = undefined;
             }
+            else { // Ansonsten passiert nichts
+                draggedPlayer.position = draggedPlayer.startPosition;
+                draggedPlayer = undefined;
+            }
         }
     }
     // Den geklickten Spieler bekommen
-    function getPlayerClick(_clickPosition) {
+    function getPlayerAtMousePosition(_clickPosition) {
         for (let player of allPlayers) {
             if (player.isClicked(_clickPosition) && player != draggedPlayer) // Wenn die Person unter der Maus nicht der gedraggte Spieler ist
                 return player;
@@ -272,7 +295,6 @@ var Soccer;
     }
     // Player Display
     function showPlayerInformation(_playerClicked) {
-        let playerDisplay = document.querySelector("div#playerInformation");
         playerDisplay.innerHTML = "<b>Number: </b>" + _playerClicked.jerseyNumber + " | <b>Speed: </b> " + Math.round(_playerClicked.speed) + " | <b>Precision: </b>" + Math.round(_playerClicked.precision);
     }
     function animationUpdate() {
@@ -280,8 +302,7 @@ var Soccer;
         for (let moveable of moveables) {
             moveable.move(); // Player bewegen sich
         }
-        // Score:
-        let scoreDisplay = document.querySelector("div#score");
+        // Score Display:
         if (Soccer.playerAtBall) {
             scoreDisplay.innerHTML = "<b>Score </b>" + goalsA + " : " + goalsB + " | <b>In possesion of the ball: </b> Player " + Soccer.playerAtBall.jerseyNumber; //add jerseyNumber of player in possesion of the ball 
         }
@@ -300,23 +321,6 @@ var Soccer;
         for (let player of allPlayers) {
             player.checkState();
         }
-    }
-    function initialisation() {
-        // Einstellungsformular wird wieder angezeigt
-        landingPage.style.display = "";
-        //stop animation and reset values to default
-        Soccer.animation = false;
-        minimumSpeed = 1;
-        maximumSpeed = 5;
-        minimumPrecision = 1;
-        maximumPrecision = 5;
-        teamAColor = "66b2ff";
-        teamBColor = "ff3333";
-        //empty arrays of current objects in the simulation
-        moveables = [];
-        allPlayers = [];
-        // Animationsintervall beenden
-        window.clearInterval(animationInterval);
     }
 })(Soccer || (Soccer = {})); // close namespace
 //# sourceMappingURL=main.js.map
