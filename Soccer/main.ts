@@ -28,9 +28,12 @@ namespace Soccer {
     let listenToMouseMove: boolean = false; // Zum Player switchen
 
     // Sounds für Anpfiff und Tor
-    const sound: HTMLAudioElement[] = [];
-    sound[0] = new Audio("anpfiff.mp3");
-    sound[1] = new Audio("jubeln.mp3");
+    export let sound: HTMLAudioElement[] = [];
+    sound[0] = new Audio("kickoff.mp3");
+    sound[1] = new Audio("cheering.mp3");
+    sound[2] = new Audio("goal.mp3");
+    sound[3] = new Audio("kick.mp3");
+    sound[4] = new Audio("backgroundmusic.mp3");
 
     export enum SOCCER_EVENT {
         RIGHTGOAL_HIT = "rightGoalHit", // Zum hochzählen
@@ -122,13 +125,13 @@ namespace Soccer {
 
     }
 
-    // Random - Funktion für die random Werte der Geschwinfigkeit und Präzision
+    // Random - Funktion für die random Werte der Geschwindigkeit und Präzision
     export function randomBetween(_min: number, _max: number): number {
         return _min + Math.random() * (_max - _min);
     }
 
     // Funktion zum Spielen der Sounds
-    function playSample(_sound: number): void {
+    export function playSample(_sound: number): void {
         sound[_sound].play();
     }
 
@@ -138,6 +141,7 @@ namespace Soccer {
 
         // Anpfiff - Sound
         playSample(0);
+        playSample(4);
 
         // Formularauswertung:
         getUserPreferences();
@@ -281,6 +285,7 @@ namespace Soccer {
         //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
         if (xpos > 0 && ypos > 0) {
 
+            playSample(3); // Kicksound
             ball.destination = new Vector(xpos, ypos);
             ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
             animation = true; // auch damit man währenddessen Spieler rennen nicht klicken kann
@@ -290,12 +295,26 @@ namespace Soccer {
 
     function handleLeftGoal(): void {
         goalsB++;
-        playSample(1); // Jubeln
+        playSample(2); // Jubeln  
+        
+        // Spieler werden zurück zur Startposition gesetzt
+        for (let player of allPlayers) {
+            if (player) {
+                player.position = player.startPosition;
+            }
+        }
     }
 
     function handleRightGoal(): void {
         goalsA++;
-        playSample(1); // Jubeln
+        playSample(2); // Jubeln
+
+        // Spieler werden zurück zur Startposition gesetzt
+        for (let player of allPlayers) {
+            if (player) {
+                player.position = player.startPosition;
+            }
+        }
     }
 
 

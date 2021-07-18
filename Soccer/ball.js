@@ -130,8 +130,13 @@ var Soccer;
                     this.position.add(direction);
                 }
                 // Wenn der aus dem Spielfeld rausrollt, wird er automatisch zurück in die Mitte gesetzt:
-                if (this.position.x < 98 || this.position.x > 902 || this.position.y < 25 || this.position.y > 525) {
+                if (this.position.x < 99 || this.position.x > 901 || this.position.y < 25 || this.position.y > 525) {
+                    this.destination = new Soccer.Vector(500, 275); // sonst ist Destination noch beim letzten Klick
                     this.position = new Soccer.Vector(500, 275);
+                }
+                // Sound Jubeln
+                if (this.position.x < 180 && this.position.x > 170 || this.position.x > 820 && this.position.x < 830) {
+                    Soccer.playSample(1);
                 }
                 // Tor checken
                 this.checkGoal();

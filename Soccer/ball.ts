@@ -156,8 +156,14 @@ namespace Soccer {
                 }
 
                 // Wenn der aus dem Spielfeld rausrollt, wird er automatisch zurück in die Mitte gesetzt:
-                if (this.position.x < 98 || this.position.x > 902 || this.position.y < 25 || this.position.y > 525) {
+                if (this.position.x < 99 || this.position.x > 901 || this.position.y < 25 || this.position.y > 525) {
+                    this.destination = new Vector(500, 275); // sonst ist Destination noch beim letzten Klick
                     this.position = new Vector(500, 275);
+                }
+
+                // Sound Jubeln
+                if (this.position.x < 180 && this.position.x > 170 || this.position.x > 820 && this.position.x < 830) {
+                    playSample(1);
                 }
 
                 // Tor checken
@@ -176,6 +182,7 @@ namespace Soccer {
                     let event: CustomEvent = new CustomEvent(SOCCER_EVENT.LEFTGOAL_HIT);
                     crc2.canvas.dispatchEvent(event);
                     this.hitGoalA = true;
+                
                 }
             }
             if (this.position.x > 900 && this.position.y > 225 && this.position.y < 325) {

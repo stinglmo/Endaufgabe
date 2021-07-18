@@ -23,9 +23,12 @@ var Soccer;
     let draggedPlayer;
     let listenToMouseMove = false; // Zum Player switchen
     // Sounds für Anpfiff und Tor
-    const sound = [];
-    sound[0] = new Audio("anpfiff.mp3");
-    sound[1] = new Audio("jubeln.mp3");
+    Soccer.sound = [];
+    Soccer.sound[0] = new Audio("kickoff.mp3");
+    Soccer.sound[1] = new Audio("cheering.mp3");
+    Soccer.sound[2] = new Audio("goal.mp3");
+    Soccer.sound[3] = new Audio("kick.mp3");
+    Soccer.sound[4] = new Audio("backgroundmusic.mp3");
     let SOCCER_EVENT;
     (function (SOCCER_EVENT) {
         SOCCER_EVENT["RIGHTGOAL_HIT"] = "rightGoalHit";
@@ -96,19 +99,21 @@ var Soccer;
         Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.RIGHTGOAL_HIT, handleRightGoal);
         Soccer.crc2.canvas.addEventListener(SOCCER_EVENT.LEFTGOAL_HIT, handleLeftGoal);
     }
-    // Random - Funktion für die random Werte der Geschwinfigkeit und Präzision
+    // Random - Funktion für die random Werte der Geschwindigkeit und Präzision
     function randomBetween(_min, _max) {
         return _min + Math.random() * (_max - _min);
     }
     Soccer.randomBetween = randomBetween;
     // Funktion zum Spielen der Sounds
     function playSample(_sound) {
-        sound[_sound].play();
+        Soccer.sound[_sound].play();
     }
+    Soccer.playSample = playSample;
     function startSimulation() {
         landingPage.style.display = "none"; // Damit das Formular verschwindet
         // Anpfiff - Sound
         playSample(0);
+        playSample(4);
         // Formularauswertung:
         getUserPreferences();
         // Background und Ball werden erstellt:
@@ -219,6 +224,7 @@ var Soccer;
         }
         //Wenn position gesetzt wurde (durch Klick), dem Ball einen Vector als Ziel mitgeben:
         if (xpos > 0 && ypos > 0) {
+            playSample(3); // Kicksound
             Soccer.ball.destination = new Soccer.Vector(xpos, ypos);
             Soccer.ball.startMoving = true; // durch ist die Präzision von der Entfernung abhängig.
             Soccer.animation = true; // auch damit man währenddessen Spieler rennen nicht klicken kann
@@ -226,11 +232,23 @@ var Soccer;
     }
     function handleLeftGoal() {
         goalsB++;
-        playSample(1); // Jubeln
+        playSample(2); // Jubeln  
+        // Spieler werden zurück zur Startposition gesetzt
+        for (let player of allPlayers) {
+            if (player) {
+                player.position = player.startPosition;
+            }
+        }
     }
     function handleRightGoal() {
         goalsA++;
-        playSample(1); // Jubeln
+        playSample(2); // Jubeln
+        // Spieler werden zurück zur Startposition gesetzt
+        for (let player of allPlayers) {
+            if (player) {
+                player.position = player.startPosition;
+            }
+        }
     }
     // Spielerinformation bekommen
     function getPlayer(_event) {
