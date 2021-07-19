@@ -1,6 +1,15 @@
+/*
+Aufgabe: Endaufgabe Soccer Simulation
+Name: Mona Stingl
+Matrikel: 267315
+Datum: 19.07.21
+Quellen: Lektionen aus dem Unterricht (insbesondere Asteroids), MDN und W3School
+Diese Abgabe ist in Zusammmenarbeit mit Hannah Dürr entstanden
+*/
+
 namespace Soccer {
     
-    // Superklasse um moveables zu handeln
+    // Superclass moveable
     export abstract class Moveable {
 
         public position: Vector;
@@ -9,14 +18,8 @@ namespace Soccer {
             this.position = _position;
         }
 
-        // Wird dann von allen Menschen überschrieben
         public abstract draw(): void;
 
         public abstract move(): void;
-       
-
-        
-
     }
-
 }

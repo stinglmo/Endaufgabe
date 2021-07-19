@@ -1,6 +1,15 @@
+/*
+Aufgabe: Endaufgabe Soccer Simulation
+Name: Mona Stingl
+Matrikel: 267315
+Datum: 19.07.21
+Quellen: Lektionen aus dem Unterricht (insbesondere Asteroids), MDN und W3School
+Diese Abgabe ist in Zusammmenarbeit mit Hannah Dürr entstanden
+*/
+
 namespace Soccer {
 
-    /// Klasse für den Player
+    // Player class
     export class Player extends Moveable {
 
         public team: string;
@@ -11,14 +20,12 @@ namespace Soccer {
 
         private radius: number = 15;
         private perceptionRadius: number = 160;
-        private active: boolean = true; // fürs Timeout wichtig
+        private active: boolean = true; // For timeout
         private color: string;
-
-
 
         constructor(_position: Vector, _startPosition: Vector, _team: string, _color: string, _speed: number, _precision: number, _jerseyNumber: number) {
             super(_position);
-            this.startPosition = _startPosition; // ist die Position aus seinem Startarray
+            this.startPosition = _startPosition; 
             this.team = _team;
             this.color = _color;
             this.speed = _speed;
@@ -26,11 +33,10 @@ namespace Soccer {
             this.jerseyNumber = _jerseyNumber;
         }
 
-
         public draw(): void {
             crc2.save();
 
-            // draw player center
+            // Draw player center
             crc2.beginPath();
             crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
             crc2.closePath();
@@ -45,7 +51,7 @@ namespace Soccer {
             crc2.fillStyle = "black";
             crc2.fillText(this.jerseyNumber.toString(), this.position.x, this.position.y);
 
-            // Radius zum überprüfen 
+            // Showing the perceptionradius 
             // crc2.beginPath();
             // crc2.arc(this.position.x, this.position.y, this.perceptionRadius, 0, 2 * Math.PI, false);
             // crc2.lineWidth = 1;
@@ -57,69 +63,61 @@ namespace Soccer {
 
         public move(): void {
 
-            if (this.perceptionRadius > 0) {// Also ein Spieler auf dem Spielfeld und kein Auswechselspieler
+            if (this.perceptionRadius > 0) {
 
-                if (this.active == true) { // Nur, wenn er nicht gerade am Ball war
-                    // 1. Distanz zum Ball ausrechnen
+                if (this.active == true) { // Just the one who wasn´t the player shortly before
+
+                    // Calculate the distance to ball
                     let vectorToBall: Vector = new Vector(ball.position.x - this.position.x, ball.position.y - this.position.y); // Differenzvektor
-                    let distanceToBall: number = vectorToBall.length; // Länge des differenzvektors
+                    let distanceToBall: number = vectorToBall.length; 
 
+                    // Calculate the distance to startposition
                     let vectorToStartposition: Vector = new Vector(this.startPosition.x - this.position.x, this.startPosition.y - this.position.y); // Differenzvektor
-                    let distanceToStartposition: number = vectorToStartposition.length; // Länge des Differenzvektors
+                    let distanceToStartposition: number = vectorToStartposition.length; 
 
-                    // 2. Checken, ob Distanz kleiner ist als der Wahnehmungsradius des Spielers
-                    // --> dann move to ball
+                    // Check, if the distance is smaller than the perceptioradius of the player 
+                    // --> The player moves to ball
                     if (distanceToBall < this.perceptionRadius && distanceToBall > 24) {
 
-                        // Gleichmäßig bewegen: wie muss der faktor sein, mit dem direction skaliert wird, damit die länge von direction speed entspricht?
-                        // Rechnung: speed / direction.length = skalierungsfaktor
-                        let scale: number = (1 + this.speed * 0.2) / distanceToBall; // Speed is individuell! Speed wäre 1px --> 50px/sekunde 
+                        // Individuell speed / vectorToBall.length = scalefactor
+                        let scale: number = (1 + this.speed * 0.2) / distanceToBall; // Evenly
                         vectorToBall.scale(scale);
                         this.position.add(vectorToBall);
 
                         // If difference between ball and player is smaller than 25, animation = false
+                        // --> Animation stopps
                         if (distanceToBall > 24 && distanceToBall < 26) {
-                            animation = false; // Damit Animation stoppt und nur dann kann man klicken
-                            playerAtBall = this; // Possession 
-                            this.active = false; // Damit er dann nicht mehr zum Ball rennen kann
+                            
+                            animation = false; 
+                            playerAtBall = this;  
+                            this.active = false; 
                             setTimeout(() => {
                                 this.activate();
                             },         2000);
-
                         }
 
-                        // Spieler läuft zurück zu seiner Startposition
-                    } else if (distanceToStartposition > 5) { // 5, damit sie nicht zittern
+                    // The player moves to startposition
+                    } else if (distanceToStartposition > 5) { 
 
                         let scale: number = (1 + this.speed * 0.2) / distanceToStartposition;
                         vectorToStartposition.scale(scale);
                         this.position.add(vectorToStartposition);
-
                     }
+                } 
+            } 
+        } // Close move
 
-                } // Close zweite Bedingung
-
-
-                // Lernen: Enumeration
-
-                // enum - zum ball, chillen, zum start
-
-                // CustomEvent Haupt
-
-
-            } // Close erste Bedingung
-
-        } // close move
-
-
-        // Wenn Player geklickt wurde:
+        // If player is clicked
         public isClicked(_clickPosition: Vector): Boolean {
+
             let difference: Vector = new Vector(_clickPosition.x - this.position.x, _clickPosition.y - this.position.y);
             return (difference.length < this.radius);
         }
 
-        // Status checken um zu schauen, ob man die Spieler wie Spieler oder Auswechselspieler "behandelt"
+        // Check, if the player should be a spare player or not
+        // If yes -->  perceptionradius = 0 
         public checkState(): void {
+
             if (this.position.x < 75 || this.position.x > 925) {
                 this.perceptionRadius = 0;
             } else if (this.startPosition.x < 75 || this.startPosition.x > 925) {
@@ -129,10 +127,10 @@ namespace Soccer {
             }
         }
 
-        // Damit er nach 3 Sekunden wieder auf den Ball zugreifen kann!
+        // To reactivate the player who was at the ball 
         private activate(): void {
+
             this.active = true;
         }
-
     }
 }

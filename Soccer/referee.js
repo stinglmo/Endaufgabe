@@ -1,15 +1,23 @@
 "use strict";
+/*
+Aufgabe: Endaufgabe Soccer Simulation
+Name: Mona Stingl
+Matrikel: 267315
+Datum: 19.07.21
+Quellen: Lektionen aus dem Unterricht (insbesondere Asteroids), MDN und W3School
+Diese Abgabe ist in Zusammmenarbeit mit Hannah Dürr entstanden
+*/
 var Soccer;
 (function (Soccer) {
     class Referee extends Soccer.Moveable {
         constructor(_position) {
             super(_position);
             this.radius = 15;
-            this.perceptionRadius = 400; // Größer als die der Spieler
+            this.perceptionRadius = 400; // bigger than the perceptionradius of the player
         }
         draw() {
             Soccer.crc2.save();
-            // Kreis
+            // Circle
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
             Soccer.crc2.closePath();
@@ -18,7 +26,7 @@ var Soccer;
             Soccer.crc2.lineWidth = 2;
             Soccer.crc2.strokeStyle = "black";
             Soccer.crc2.stroke();
-            // Streifen
+            // Stripes
             Soccer.crc2.beginPath();
             Soccer.crc2.moveTo(this.position.x - 13, this.position.y + 6);
             Soccer.crc2.lineTo(this.position.x + 13, this.position.y - 6);
@@ -45,13 +53,16 @@ var Soccer;
             Soccer.crc2.stroke();
             Soccer.crc2.restore();
         }
-        // Rollt immer zum Ball (aber nie ganz ran)
+        // Moves in the direction of the ball 
         move() {
+            // Calculate the distance to ball
             let vectorToBall = new Soccer.Vector(Soccer.ball.position.x - this.position.x, Soccer.ball.position.y - this.position.y); // Differenzvektor
-            let distanceToBall = vectorToBall.length; // Länge des Differenzvektors
-            // Checken, ob Distanz kleiner ist als der Wahnehmungsradius des Schiedsrichters und sicherstellen, dass Schiedsrichter nicht an den Ball rankommt
+            let distanceToBall = vectorToBall.length;
+            // Check, if the distance is smaller than the perceptioradius of the player 
+            // and make sure, that he will not come closer than the distance of 100
+            // --> the referee moves to ball  
             if (distanceToBall < this.perceptionRadius && distanceToBall > 100) {
-                let scale = 1 / distanceToBall; // Bewegt sich gleichmäßig drauf zu
+                let scale = 1 / distanceToBall; // Evenly
                 vectorToBall.scale(scale);
                 this.position.add(vectorToBall);
             }

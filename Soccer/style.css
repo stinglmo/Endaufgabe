@@ -1,3 +1,12 @@
+/*
+Aufgabe: Endaufgabe Soccer Simulation
+Name: Mona Stingl
+Matrikel: 267315
+Datum: 19.07.21
+Quellen: Lektionen aus dem Unterricht (insbesondere Asteroids), MDN und W3School
+Diese Abgabe ist in Zusammmenarbeit mit Hannah Dürr entstanden
+*/
+
 body, html {
     margin: 0;
     font-family: 'Montserrat', Arial, sans-serif;
@@ -48,6 +57,7 @@ div#playerInformation {
 }
 
 span#restart {
+    color: black; /* Lila-Farbe wird vermieden, wenn der Link einmal geklickt wurde */
     font-size: 40px;
     font-weight: bolder; 
     position: absolute;
@@ -96,7 +106,7 @@ div#settingsContainer {
 	left: 0;
 	right: 0;
     margin: auto;
-    background-color: lightgrey;
+    background-color: rgb(35, 192, 166);
     padding: 30px;
 }
 
@@ -109,7 +119,7 @@ div#settings {
     margin: auto;
     border: solid 1px;
     border-radius: 5px;
-    background-color: white;
+    background-color: rgb(202, 238, 236);
     height: fit-content;
     overflow: auto;
     width: 50%;
@@ -118,8 +128,8 @@ div#settings {
 }
 
 fieldset {
-    margin: 20px;
-    padding: 15px;
+    margin: 10px;
+    padding: 10px;
     text-align: left;
     border-radius: 5px;
     border: solid 0.5px;
@@ -133,12 +143,13 @@ div#startbutton {
     margin-top: 30px;
     text-align: center;
     font-size: 32px;
-    background-color: black;
+    background-color: rgb(20, 99, 131);
     color: white;
     border-radius: 5px;
     cursor: pointer;
     transition: 0.2s;
 }
+
 div#startbutton:hover {
     background-color: rgb(75, 75, 75);
 }

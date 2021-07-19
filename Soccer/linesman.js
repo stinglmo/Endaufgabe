@@ -1,6 +1,15 @@
 "use strict";
+/*
+Aufgabe: Endaufgabe Soccer Simulation
+Name: Mona Stingl
+Matrikel: 267315
+Datum: 19.07.21
+Quellen: Lektionen aus dem Unterricht (insbesondere Asteroids), MDN und W3School
+Diese Abgabe ist in Zusammmenarbeit mit Hannah Dürr entstanden
+*/
 var Soccer;
 (function (Soccer) {
+    // Linesman class
     class Linesman extends Soccer.Moveable {
         constructor(_position) {
             super(_position);
@@ -8,16 +17,16 @@ var Soccer;
         }
         draw() {
             Soccer.crc2.save();
-            // Kreis
+            // Circle
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
             Soccer.crc2.closePath();
-            Soccer.crc2.fillStyle = "#FFFF00"; // Gelb
+            Soccer.crc2.fillStyle = "#FFFF00"; // yellow
             Soccer.crc2.fill();
             Soccer.crc2.lineWidth = 2;
             Soccer.crc2.strokeStyle = "red";
             Soccer.crc2.stroke();
-            // Punkte
+            // Points
             Soccer.crc2.beginPath();
             Soccer.crc2.arc(this.position.x, this.position.y, 2, 0, 2 * Math.PI, false);
             Soccer.crc2.fillStyle = "red";
@@ -84,7 +93,7 @@ var Soccer;
             Soccer.crc2.restore();
         }
         move() {
-            this.position.x = Soccer.ball.position.x; // Immer auf der Höhe vom Ball
+            this.position.x = Soccer.ball.position.x;
         }
     }
     Soccer.Linesman = Linesman;
