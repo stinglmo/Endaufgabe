@@ -284,32 +284,18 @@ namespace Soccer {
 
     function handleLeftGoal(): void {
 
-        goalsB++;
+        goalsA++;
 
         // Cheering - Sound
         playSample(2);  
-        
-        // Player go to their startposition 
-        for (let player of allPlayers) {
-            if (player) {
-                player.position = player.startPosition;
-            }
-        }
     }
 
     function handleRightGoal(): void {
 
-        goalsA++;
+        goalsB++;
 
         // Kick - Sound
         playSample(2);
-
-        // Player go to their startposition 
-        for (let player of allPlayers) {
-            if (player) {
-                player.position = player.startPosition;
-            }
-        }
     }
 
     // Get playerinformation

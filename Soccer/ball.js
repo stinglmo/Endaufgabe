@@ -129,7 +129,7 @@ var Soccer;
                 }
                 // If the ball rolls outside the playingfield 
                 // --> He will automatically be placed in the middle 
-                if (this.position.x < 99 || this.position.x > 901 || this.position.y < 25 || this.position.y > 525) {
+                if (this.position.x <= 99 || this.position.x >= 901 || this.position.y < 25 || this.position.y > 525) {
                     this.destination = new Soccer.Vector(500, 275);
                     this.position = new Soccer.Vector(500, 275);
                 }

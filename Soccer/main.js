@@ -226,26 +226,14 @@ var Soccer;
         }
     }
     function handleLeftGoal() {
-        goalsB++;
+        goalsA++;
         // Cheering - Sound
         playSample(2);
-        // Player go to their startposition 
-        for (let player of allPlayers) {
-            if (player) {
-                player.position = player.startPosition;
-            }
-        }
     }
     function handleRightGoal() {
-        goalsA++;
+        goalsB++;
         // Kick - Sound
         playSample(2);
-        // Player go to their startposition 
-        for (let player of allPlayers) {
-            if (player) {
-                player.position = player.startPosition;
-            }
-        }
     }
     // Get playerinformation
     function getPlayer(_event) {

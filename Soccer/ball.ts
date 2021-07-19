@@ -125,7 +125,7 @@ namespace Soccer {
 
             // After a mouseclick 
             if (this.destination) {
-                
+
                 let direction: Vector = new Vector(this.destination.x - this.position.x, this.destination.y - this.position.y);
                 let distance: number = 0;
 
@@ -141,7 +141,7 @@ namespace Soccer {
                     distance += (Math.random() - 0.5) * (0.25 * direction.length);
 
                     this.destination.x += distance;
-                    this.destination.y += distance; 
+                    this.destination.y += distance;
                     this.startMoving = false;
                 }
 
@@ -157,8 +157,8 @@ namespace Soccer {
 
                 // If the ball rolls outside the playingfield 
                 // --> He will automatically be placed in the middle 
-                if (this.position.x < 99 || this.position.x > 901 || this.position.y < 25 || this.position.y > 525) {
-                    this.destination = new Vector(500, 275); 
+                if (this.position.x <= 99 || this.position.x >= 901 || this.position.y < 25 || this.position.y > 525) {
+                    this.destination = new Vector(500, 275);
                     this.position = new Vector(500, 275);
                 }
 
@@ -170,13 +170,13 @@ namespace Soccer {
             }
         }
 
-        
+
         // Check goal
         private checkGoal(): void {
 
             // Left goal
             if (this.position.x < 100 && this.position.y > 225 && this.position.y < 325) {
-                
+
                 if (this.hitGoalA == false) {
 
                     // Create custom event and dispatch it
@@ -188,7 +188,7 @@ namespace Soccer {
 
             // Right goal
             if (this.position.x > 900 && this.position.y > 225 && this.position.y < 325) {
-                
+
                 if (this.hitGoalB == false) {
 
                     // Create custom event and dispatch it
