@@ -10,13 +10,15 @@ Diese Abgabe ist in Zusammmenarbeit mit Hannah Dürr entstanden
 body, html {
     margin: 0;
     font-family: 'Montserrat', Arial, sans-serif;
-    background-color: lightgray;
+    background-color:  rgb(202, 238, 236);
     line-height: 1.5;
+    color: rgb(3, 36, 54);
 }
 
 h2 {
     margin: 20px;
     line-height: 1.5;
+    color: rgb(11, 78, 117);
 }
 
 div#simulationContainer {
@@ -92,7 +94,7 @@ span#instructionBoard {
     padding: 30px;
     background-color: white;
     text-align: left;
-    box-shadow: 8px 8px 25px #00000060;
+    
 }
 
 .is-hidden {
@@ -106,7 +108,7 @@ div#settingsContainer {
 	left: 0;
 	right: 0;
     margin: auto;
-    background-color: rgb(35, 192, 166);
+    background-color: rgb(112, 216, 219);
     padding: 30px;
 }
 
@@ -117,8 +119,9 @@ div#settings {
 	left: 0;
 	right: 0;
     margin: auto;
-    border: solid 1px;
+    border: solid 3px;
     border-radius: 5px;
+    border-color: rgb(11, 94, 143);
     background-color: rgb(202, 238, 236);
     height: fit-content;
     overflow: auto;
@@ -143,7 +146,7 @@ div#startbutton {
     margin-top: 30px;
     text-align: center;
     font-size: 32px;
-    background-color: rgb(20, 99, 131);
+    background-color: rgb(11, 78, 117);
     color: white;
     border-radius: 5px;
     cursor: pointer;
@@ -152,5 +155,14 @@ div#startbutton {
 
 div#startbutton:hover {
     background-color: rgb(75, 75, 75);
+}
+
+footer {
+    position: absolute;
+    text-align: center;
+    font-size: 15px;
+    color: rgb(11, 78, 117);
+    width: 1380px;
+    bottom: 0;
 }
 

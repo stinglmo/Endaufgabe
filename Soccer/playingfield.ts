@@ -16,7 +16,7 @@ namespace Soccer {
 
             // Mark the canvas area
             crc2.beginPath();
-            crc2.fillStyle = "silver";
+            crc2.fillStyle = "white";
             crc2.fillRect(0, 0, crc2.canvas.width, crc2.canvas.height);
             crc2.closePath();
 

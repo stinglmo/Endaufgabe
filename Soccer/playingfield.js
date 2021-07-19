@@ -14,7 +14,7 @@ var Soccer;
         draw() {
             // Mark the canvas area
             Soccer.crc2.beginPath();
-            Soccer.crc2.fillStyle = "silver";
+            Soccer.crc2.fillStyle = "white";
             Soccer.crc2.fillRect(0, 0, Soccer.crc2.canvas.width, Soccer.crc2.canvas.height);
             Soccer.crc2.closePath();
             // Do the first translation to place field in the middle of the canvas area
